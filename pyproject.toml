@@ -1,0 +1,17 @@
+[project]
+name = "tkt0605"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "jinja2>=3.1.6",
+    "mistune>=3.2.1",
+    "python-frontmatter>=1.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "flask>=3.1.3",
+]

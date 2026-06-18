@@ -1,0 +1,36 @@
+{
+  "name": "tkt0605",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch:tailwind": "tailwindcss -i ./src/index.css -o ./dist/index.css --watch",
+    "watch:html": "nodemon --watch templates --ext html --exec \"echo 'HTML file changed'\"",
+    "flask-dev": "uv run flask --app src/dev-server.py run --debug -p 8000",
+    "dev": "concurrently \"pnpm watch:tailwind\" \"pnpm watch:html\" \"pnpm flask-dev\"",
+    "build": "tailwindcss -i ./src/index.css -o ./dist/index.css && uv run src/build.py",
+    "preview": "uv run flask --app src/dev-server.py run -p 8000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.7.0",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.20",
+    "autoprefixer": "^10.5.0",
+    "concurrently": "^10.0.3",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.15",
+    "prettier": "^3.8.4",
+    "prettier-plugin-jinja-template": "^2.2.0",
+    "tailwindcss": "^4.3.1"
+  }
+}
