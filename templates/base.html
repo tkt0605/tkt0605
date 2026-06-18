@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Tkt0605.me{% endblock %}</title>
-    <meta name="description" content="{% block description %}Takato — Software & Engineering{% endblock %}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
-
-    {% block head %}{% endblock %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/index.css" />
+  {% block head %}{% endblock %}
 </head>
-<body>
-    {% block header %}{% endblock %}
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    {% block footer %}{% endblock %}
-    {% block scripts %}{% endblock %}
+<body class="bg-white text-zinc-900 min-h-screen">
+  <div class="max-w-2xl mx-auto px-4 py-12">
+    <header class="flex items-center justify-between mb-12">
+      <a href="/" class="text-lg font-semibold tracking-tight hover:opacity-60 transition-opacity">
+        Takato Komada
+      </a>
+      <nav class="flex gap-6 text-sm text-zinc-500">
+        <a href="/projects" class="hover:text-zinc-900 transition-colors">Projects</a>
+      </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="mt-16 pt-8 border-t border-zinc-100 text-sm text-zinc-400">
+      <p>Takato Komada</p>
+    </footer>
+  </div>
 </body>
 </html>

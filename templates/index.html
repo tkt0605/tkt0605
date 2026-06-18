@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Tkt0605.me{% endblock %}
-
-{% block description %}Welcome to Tkt0605.me, the personal website of Takato, a software engineer and technology enthusiast. Explore my projects, blog posts, and more!{% endblock %}
-
 {% block content %}
-    <h1>Welcome to Tkt0605.me</h1>
-    <p>Hello, I'm Takato!</p>
+<section class="mb-12">
+  <h1 class="text-2xl font-semibold mb-3">Takato Komada</h1>
+  <p class="text-zinc-500 leading-relaxed">
+    Software Engineer. Building things on the web.
+  </p>
+</section>
+
+{% if lists.projects %}
+<section>
+  <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Projects</h2>
+  {{ lists.projects | safe }}
+</section>
+{% endif %}
 {% endblock %}

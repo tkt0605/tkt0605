@@ -1,0 +1,12 @@
+<ul class="flex flex-col gap-4">
+  {% for post in posts %}
+  <li>
+    <a href="{{ post.href }}" class="group flex flex-col gap-1">
+      <span class="font-medium group-hover:underline underline-offset-4">{{ post.title }}</span>
+      {% if post.summary %}
+      <span class="text-sm text-zinc-500">{{ post.summary }}</span>
+      {% endif %}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
