@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tkt0605.me{% endblock %}</title>
+    <meta name="description" content="{% block description %}Takato — Software & Engineering{% endblock %}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% block header %}{% endblock %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    {% block footer %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>
