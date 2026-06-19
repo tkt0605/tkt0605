@@ -8,20 +8,27 @@
   {% block head %}{% endblock %}
 </head>
 <body class="bg-white text-zinc-900 min-h-screen">
-  <div class="max-w-2xl mx-auto px-4 py-12">
+  <div class="w-4xl mx-auto px-4 py-8">
     <header class="flex items-center justify-between mb-12">
       <a href="/" class="text-lg font-semibold tracking-tight hover:opacity-60 transition-opacity">
-        Takato Komada
+        Tkt0605.me
       </a>
-      <nav class="flex gap-6 text-sm text-zinc-500">
-        <a href="/projects" class="hover:text-zinc-900 transition-colors">Projects</a>
+      <nav class="flex gap-2 text-sm text-zinc-500">
+        <a class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100" href="https://x.com/TakatoKomada" target="_blank" rel="noopener noreferrer">
+            <div class="w-4 h-4 bg-zinc-500 [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]" style="mask-image: url('/assets/logo-white.png');"></div>
+            <span>X</span>
+        </a>
+        <a class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100" href="https://github.com/tkt0605" target="_blank" rel="noopener noreferrer">
+            <div class="w-4 h-4 bg-zinc-500 [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]" style="mask-image: url('/assets/github.svg');"></div>
+            <span>GitHub</span>
+        </a>
       </nav>
     </header>
 
     {% block content %}{% endblock %}
 
     <footer class="mt-16 pt-8 border-t border-zinc-100 text-sm text-zinc-400">
-      <p>Takato Komada</p>
+        &copy;2026 Produced by Takato Komada 
     </footer>
   </div>
 </body>

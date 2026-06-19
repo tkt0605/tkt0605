@@ -1,17 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="mb-12">
-  <h1 class="text-2xl font-semibold mb-3">Takato Komada</h1>
-  <p class="text-zinc-500 leading-relaxed">
-    Software Engineer. Building things on the web.
-  </p>
-</section>
+{% if whoami %}
+<!-- <section class="mb-12 w-full h-full border border-zinc-300">
+    <div class="prose prose-zinc max-w-none p-4">
+        {{ whoami.content | safe }}
+    </div>
+</section> -->
+<fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
+    <legend class="ms-4 md:ms-0">
+        <!-- <h6 class="text-lg mx-2 font-mono italic">whoami</h6> -->
+         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Whoami</h3>
+    </legend>
+    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+        {{ whoami.content | safe }}
+    </article>
+</fieldset>
+{% endif %}
 
+{% if hobby %}
+<fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
+    <legend class="ms-4 md:ms-0">
+        <!-- <h6 class="text-lg mx-2 font-mono italic">whoami</h6> -->
+         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Hobby</h3>
+    </legend>
+    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+        {{ hobby.content | safe }}
+    </article>
+    <section>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
+            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                <span>{{hobby.music}}</span>
+            </a>
+            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                <span>{{hobby.novels}}</span>
+            </a>
+            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                <span>{{hobby.travels}}</span>
+            </a>
+            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                <span>{{hobby.movies}}</span>
+            </a>
+        </div>
+    </section>
+</fieldset>
+<!-- <section class="mb-12 w-full h-full border border-zinc-300">
+    <div class="prose prose-zinc max-w-none p-4">
+        {{ hobby.content | safe }}
+    </div>
+</section> -->
+{% endif %}
 {% if lists.projects %}
-<section>
+<fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
+    <legend class="ms-4 md:ms-0">
+        <!-- <h6 class="text-lg mx-2 font-mono italic">whoami</h6> -->
+         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Projects</h3>
+    </legend>
+    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+        {{ lists.projects | safe }}        
+    </article>
+</fieldset>
+<!-- <section>
   <h2 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Projects</h2>
   {{ lists.projects | safe }}
-</section>
+</section> -->
 {% endif %}
 {% endblock %}
