@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch:tailwind": "tailwindcss -i ./src/index.css -o ./dist/index.css --watch",
-    "watch:html": "nodemon --watch templates --ext html --exec \"echo 'HTML file changed'\"",
+    "watch:html": "nodemon --watch templates --watch posts --ext html,md --exec \"uv run src/build.py\"",
     "flask-dev": "uv run flask --app src/dev-server.py run --debug -p 8000",
     "dev": "concurrently \"pnpm watch:tailwind\" \"pnpm watch:html\" \"pnpm flask-dev\"",
     "build": "tailwindcss -i ./src/index.css -o ./dist/index.css && uv run src/build.py",
