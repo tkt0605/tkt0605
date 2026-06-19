@@ -24,8 +24,16 @@
         </a>
       </nav>
     </header>
-
-    {% block content %}{% endblock %}
+    <main class="flex flex-col ">
+      <div class="profile-photo-wrap mt-4 mx-auto w-56 max-w-full sm:float-right sm:mt-0 sm:ml-4 sm:mb-4 sm:mx-0 sm:w-52 md:w-60 lg:w-64">
+        <img alt="takato komadaの肖像画" class="photo-main w-full object-cover rounded-md" decoding="async" loading="eager" src="/assets/me.jpg.webp">
+        <!-- <img alt="takato komadaのふざけた肖像画" class="photo-alt w-full object-cover rounded-md" decoding="async" loading="eager" src="/assets/me_alt.jpg.webp"> -->
+        <span class="easter-egg-note">
+          <font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">イースターエッグを見つけてくれたんですね！</font></font>  
+        </span> 
+      </div>
+      {% block content %}{% endblock %}
+    </main>
 
     <footer class="mt-16 pt-8 border-t border-zinc-100 text-sm text-zinc-400">
         &copy;2026 Produced by Takato Komada 
