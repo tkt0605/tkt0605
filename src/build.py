@@ -132,7 +132,9 @@ seo_common = {
 }
 whoami = load_content("content/information/whoami.md")
 hobby = load_content("content/mylist/hobby.md")
-index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby)
+experience = load_content("content/experience/experience.md")
+project = load_content("content/projects/project.md")
+index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby, experience=experience, project=project)
 for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
 write_output(index_soup.encode_contents().decode("utf-8"), "index.html")
