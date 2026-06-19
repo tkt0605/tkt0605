@@ -10,10 +10,19 @@
 <fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
     <legend class="ms-4 md:ms-0">
         <!-- <h6 class="text-lg mx-2 font-mono italic">whoami</h6> -->
-         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Whoami</h3>
+         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">自己紹介</h3>
     </legend>
     <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
-        {{ whoami.content | safe }}
+        <div class="profile-photo-wrap mt-4 mx-auto w-56 max-w-full sm:float-right sm:mt-0 sm:ml-4 sm:mb-4 sm:mx-0 sm:w-52 md:w-60 lg:w-64">
+            <img alt="takato komadaの肖像画" class="photo-main w-full object-cover" decoding="async" loading="eager" src="/assets/me.jpg.webp">
+            <img alt="takato komadaのふざけた肖像画" class="photo-alt w-full object-cover" decoding="async" loading="eager" src="/assets/me_alt.jpg.webp">
+            <span class="easter-egg-note">
+                <font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">イースターエッグを見つけてくれたんですね！</font></font>
+            </span>
+        </div>
+        <div class="flex flex-col gap-4 ">
+            {{ whoami.content | safe }}
+        </div>
     </article>
 </fieldset>
 {% endif %}
@@ -22,27 +31,29 @@
 <fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
     <legend class="ms-4 md:ms-0">
         <!-- <h6 class="text-lg mx-2 font-mono italic">whoami</h6> -->
-         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Hobby</h3>
+         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">趣味</h3>
     </legend>
     <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
-        {{ hobby.content | safe }}
-    </article>
-    <section>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
-            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
-                <span>{{hobby.music}}</span>
-            </a>
-            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
-                <span>{{hobby.novels}}</span>
-            </a>
-            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
-                <span>{{hobby.travels}}</span>
-            </a>
-            <a href="/" class="flex items-center gap-2 py-2 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
-                <span>{{hobby.movies}}</span>
-            </a>
+        <div class="flex flex-col gap-1">
+            {{ hobby.content | safe }}
         </div>
-    </section>
+    </article>
+        <section>
+            <div class="flex flex-wrap justify-center gap-3 pt-5">
+                <a href="{{hobby.movie_link}}" class="flex items-center gap-2 py-2 px-15 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                    <span>{{hobby.movies}}</span>
+                </a>
+                <a href="{{hobby.music_link}}" class="flex items-center gap-2 py-2 px-15 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                    <span>{{hobby.music}}</span>
+                </a>
+                <a href="{{hobby.novels_link}}" class="flex items-center gap-2 py-2 px-15 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                    <span>{{hobby.novels}}</span>
+                </a>
+                <a href="{{hobby.travels_url}}" class="flex items-center gap-2 py-2 px-15 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                    <span>{{hobby.travels}}</span>
+                </a>
+            </div>
+        </section>
 </fieldset>
 <!-- <section class="mb-12 w-full h-full border border-zinc-300">
     <div class="prose prose-zinc max-w-none p-4">
@@ -54,7 +65,7 @@
 <fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
     <legend class="ms-4 md:ms-0">
         <!-- <h6 class="text-lg mx-2 font-mono italic">whoami</h6> -->
-         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">Projects</h3>
+         <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">プロジェクト</h3>
     </legend>
     <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
         {{ lists.projects | safe }}        
