@@ -90,6 +90,12 @@ def og_tags(data: dict):
     return tags
 
 
+def load_content(path):
+    obj = frontmatter.load(path)
+    obj.content = make_html(obj.content)
+    return obj
+
+
 # posts/ 以下のフォルダを自動検出してビルド
 post_folders = [f for f in os.listdir("posts") if os.path.isdir(f"posts/{f}")]
 lists = {}
@@ -124,7 +130,9 @@ seo_common = {
     "description": f"{name}'s personal website",
     "type": "profile",
 }
-index_soup = render_template("index.html", lists=lists, name=name, title=name)
+whoami = load_content("content/information/whoami.md")
+hobby = load_content("content/mylist/hobby.md")
+index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby)
 for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
 write_output(index_soup.encode_contents().decode("utf-8"), "index.html")
