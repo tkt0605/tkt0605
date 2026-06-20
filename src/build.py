@@ -122,7 +122,22 @@ for folder in post_folders:
         write_output(soup.encode_contents().decode("utf-8"), folder, f"{post['slug']}.html")
 
     lists[folder] = list_template.render(posts=posts)
-
+    list_page_rendered = env.get_template("posts/list_page.html").render(
+        posts=posts,
+        folder_title=folder,
+        list_html=lists[folder],
+        title=f"{name} | {folder}",
+        name=name
+    )
+    list_page_soup=bs(list_page_rendered)
+    seo=og_tags({
+        "url": urljoin(url, f"/{folder}/"),
+        "title": f"{name} | {folder}",
+        "type": "website",
+    })
+    for item in seo:
+        list_page_soup.head.append(bs(item))
+    write_output(list_page_soup.encode_contents().decode("utf-8"), folder, "index.html")
 # index.html
 seo_common = {
     "url": url,

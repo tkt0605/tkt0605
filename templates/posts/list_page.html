@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+ <a href="/" class="text-sm text-zinc-400 hover:text-zinc-900 transition-colors">← Back</a>
+<h1 class="text-2xl font-semibold mt-4 mb-8">{{ folder_title }}</h1>
+{{ list_html | safe }}
+{% endblock %}
