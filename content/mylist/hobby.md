@@ -12,6 +12,7 @@ travels_url: /travels/
 
 僕の人生のモットー
 
-「If today were the last day of my life, would I want to do what I am about to do today?」
-by steve jobs
+`「もし今日が人生最後の日だとしたら、これからやろうとしていることを本当にやりたいだろうか？」`
+
+　*スティーブ・ジョブズより*
 
