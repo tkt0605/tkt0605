@@ -3,7 +3,7 @@ Title: "My list"
 movies: "映画"
 movie_link: /movies/
 music: "音楽"
-music_link: /music/
+music_link: /musics/
 novels: "小説"
 novels_link: /novels/
 travels: "旅行"
