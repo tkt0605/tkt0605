@@ -9,6 +9,8 @@ app = Flask(__name__, template_folder="../templates", static_folder="../dist")
 
 @app.route("/<path:path>")
 def send_static(path):
+    if path.endswith("/"):
+        path = f"{path}index.html"
     try:
         return send_from_directory(dist, path, max_age=0)
     except Exception:
