@@ -78,6 +78,8 @@ def get_post(folder, file):
     obj["href"] = f"/{folder}/{obj['slug']}"
     if "order" not in obj:
         obj["order"] = 0
+    if "pin" not in obj:
+        obj["pin"] = False
     return obj
 
 
@@ -99,11 +101,12 @@ def load_content(path):
 # posts/ 以下のフォルダを自動検出してビルド
 post_folders = [f for f in os.listdir("posts") if os.path.isdir(f"posts/{f}")]
 lists = {}
+posts_by_folder = {}
 
 for folder in post_folders:
     files = [f for f in os.listdir(f"posts/{folder}") if f.endswith(".md")]
     posts = [get_post(folder, f) for f in files]
-    posts = sorted(posts, key=lambda x: x["order"])
+    posts = sorted(posts, key=lambda x: (not x["pin"], x["order"]))
 
     page_template = env.get_template(f"posts/{folder}/page.html")
     list_template = env.get_template(f"posts/{folder}/list.html")
@@ -121,6 +124,7 @@ for folder in post_folders:
             soup.head.append(bs(item))
         write_output(soup.encode_contents().decode("utf-8"), folder, f"{post['slug']}.html")
 
+    posts_by_folder[folder] = posts
     lists[folder] = list_template.render(posts=posts)
     list_page_rendered = env.get_template("posts/list_page.html").render(
         posts=posts,
@@ -148,8 +152,7 @@ seo_common = {
 whoami = load_content("content/information/whoami.md")
 hobby = load_content("content/mylist/hobby.md")
 experience = load_content("content/experience/experience.md")
-project = load_content("content/projects/project.md")
-index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby, experience=experience, project=project)
+index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby, experience=experience, projects=posts_by_folder.get("projects", []))
 for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
 write_output(index_soup.encode_contents().decode("utf-8"), "index.html")

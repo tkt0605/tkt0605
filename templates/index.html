@@ -26,7 +26,7 @@
     <legend class="ms-4 md:ms-0">
          <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">自己紹介</h3>
     </legend>
-    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block p-2">
         <div class="flex flex-col gap-4 ">
             {{ whoami.content | safe }}
         </div>
@@ -44,7 +44,7 @@
             {{ hobby.content | safe }}
         </div>
     </article>
-        <section>
+        <section class="p-2">
             <div class="flex flex-wrap justify-center gap-3 pt-5">
                 <a href="{{hobby.movie_link}}" class="flex items-center gap-2 py-2 px-15 border border-zinc-300 rounded-md hover:bg-zinc-100">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-film" viewBox="0 0 16 16">
@@ -77,14 +77,43 @@
         </section>
 </fieldset>
 {% endif %}
-{% if lists.projects %}
+{% if projects %}
 <fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12 p-2">
     <legend class="ms-4 md:ms-0">
          <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">プロジェクト</h3>
     </legend>
-    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
-        {{ lists.projects | safe }}        
-    </article>
+    <section class="p-2">
+        {% for project in projects %}
+        <article class="text-lg prose-p:m-0 flex flex-col gap-4 mb-5">
+            <span class="flex items-center gap-4">
+                <div class="w-30 h-30 border rounded-md">
+                    <img src="{{ project.img }}" alt="threebody-project-img" class="">
+                </div>
+                <div class="block">
+                    <div class="flex items-center gap-3">
+                        <div class="font-medium group-hover:underline underline-offset-4">{{ project.title }}</div>
+                        {% if project.pin %}
+                        <div class="text-sm text-zinc-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pin-angle-fill" viewBox="0 0 16 16">
+                                <path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a6 6 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707s.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a6 6 0 0 1 1.013.16l3.134-3.133a3 3 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146"/>
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if project.summary %}
+                    <div class="text-sm text-zinc-500">{{ project.summary }}</div>
+                    <div class="py-1">
+                        <a href="{{ project.url }}" class="inline-flex items-center gap-2 py-1 px-5 border border-zinc-300 rounded-md hover:bg-zinc-100">
+                            {{ project.browse }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </span>
+        </article>
+        {% endfor %}
+    </section>
 </fieldset>
 {% endif %}
 {% endblock %}
