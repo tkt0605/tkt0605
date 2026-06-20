@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 import mistune
 import frontmatter
 from bs4 import BeautifulSoup, element
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNotFound
 
 first_name = "Takato"
 last_name = "Komada"
@@ -108,21 +108,25 @@ for folder in post_folders:
     posts = [get_post(folder, f) for f in files]
     posts = sorted(posts, key=lambda x: (not x["pin"], x["order"]))
 
-    page_template = env.get_template(f"posts/{folder}/page.html")
+    try:
+        page_template = env.get_template(f"posts/{folder}/page.html")
+    except TemplateNotFound:
+        page_template = None
     list_template = env.get_template(f"posts/{folder}/list.html")
 
-    for post in posts:
-        rendered = page_template.render(post=post, title=f"{name} | {post['title']}", name=name)
-        soup = bs(rendered)
-        seo = og_tags({
-            "url": urljoin(url, f"/{folder}/{post['slug']}"),
-            "title": f"{name} | {post['title']}",
-            "description": post.get("summary", ""),
-            "type": "website",
-        })
-        for item in seo:
-            soup.head.append(bs(item))
-        write_output(soup.encode_contents().decode("utf-8"), folder, f"{post['slug']}.html")
+    if page_template:
+        for post in posts:
+            rendered = page_template.render(post=post, title=f"{name} | {post['title']}", name=name)
+            soup = bs(rendered)
+            seo = og_tags({
+                "url": urljoin(url, f"/{folder}/{post['slug']}"),
+                "title": f"{name} | {post['title']}",
+                "description": post.get("summary", ""),
+                "type": "website",
+            })
+            for item in seo:
+                soup.head.append(bs(item))
+            write_output(soup.encode_contents().decode("utf-8"), folder, f"{post['slug']}.html")
 
     posts_by_folder[folder] = posts
     lists[folder] = list_template.render(posts=posts)

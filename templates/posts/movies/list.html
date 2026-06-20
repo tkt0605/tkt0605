@@ -1,5 +1,6 @@
 <!--　一覧ページ：ポスターグリッド（ホバーで詳細表示） -->
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+
   {% for post in posts %}
   <div class="group relative aspect-[2/3] w-full rounded-md overflow-hidden bg-zinc-100 ring-1 ring-zinc-200">
     {% if post.image %}
@@ -14,3 +15,5 @@
   </div>
   {% endfor %}
 </div>
+
+
