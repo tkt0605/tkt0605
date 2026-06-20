@@ -1,14 +1,14 @@
-<!--　一覧ページ -->
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+<!--　一覧ページ：ポスターグリッド（ホバーで詳細表示） -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
   {% for post in posts %}
-  <div class="flex flex-col gap-2">
+  <div class="group relative aspect-[2/3] w-full rounded-md overflow-hidden bg-zinc-100 ring-1 ring-zinc-200">
     {% if post.image %}
-    <img src="{{ post.image }}" alt="{{ post.title }}" class="w-full aspect-square object-cover rounded-md" loading="lazy">
+    <img src="{{ post.image }}" alt="{{ post.title }}" class="w-full h-full object-cover" loading="lazy">
     {% endif %}
-    <div class="flex flex-col">
-      <span class="font-medium">{{ post.title }}</span>
+    <div class="absolute inset-0 flex flex-col justify-end p-3 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <span class="block text-sm font-medium text-white">{{ post.title }}</span>
       {% if post.summary %}
-      <span class="text-sm text-zinc-500">{{ post.summary }}</span>
+      <span class="block text-xs text-zinc-200 mt-1 line-clamp-3">{{ post.summary }}</span>
       {% endif %}
     </div>
   </div>

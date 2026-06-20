@@ -35,16 +35,15 @@
 {% endif %}
 
 {% if hobby %}
-<fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12">
+<fieldset class="border-t md:border border-solid border-black dark:border-white min-w-0 mb-12 p-2">
     <legend class="ms-4 md:ms-0">
          <h3 class="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-4">趣味・モットー</h3>
     </legend>
-    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+    <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block p-2">
         <div class="flex flex-col gap-1">
             {{ hobby.content | safe }}
         </div>
-    </article>
-        <section class="p-2">
+        <section>
             <div class="flex flex-wrap justify-center gap-3 pt-5">
                 <a href="{{hobby.movie_link}}" class="flex items-center gap-2 py-2 px-15 border border-zinc-300 rounded-md hover:bg-zinc-100">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-film" viewBox="0 0 16 16">
@@ -75,6 +74,7 @@
                 </a>
             </div>
         </section>
+    </article>
 </fieldset>
 {% endif %}
 {% if projects %}
