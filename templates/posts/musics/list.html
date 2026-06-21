@@ -1,21 +1,371 @@
-<!--　一覧ページ：アルバムジャケット縦スクロール（ホバーで詳細表示） -->
-<div>
-  Musics
-</div>
-<div class="music-stage">
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 p-6">
-    {% for post in posts %}
-    <div class="group relative aspect-square w-full rounded-md overflow-hidden bg-zinc-100 ring-1 ring-zinc-200">
-      {% if post.image %}
-      <img src="{{ post.image }}" alt="{{ post.title }}" class="w-full h-full object-cover" loading="lazy">
-      {% endif %}
-      <div class="absolute inset-0 flex flex-col justify-end p-3 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <span class="block text-sm font-medium text-white">{{ post.title }}</span>
-        {% if post.summary %}
-        <span class="block text-xs text-zinc-200 mt-1 line-clamp-3">{{ post.summary }}</span>
-        {% endif %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+.music-page {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 20px 36px;
+  border-radius: 24px;
+  overflow: hidden;
+  background-color: #0A0A0F;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 18px 18px;
+  color: #F5F5F7;
+  font-family: "Noto Sans JP", "Inter", sans-serif;
+}
+
+.music-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+.music-back {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  color: #8A8A99;
+  text-decoration: none;
+}
+.music-back:hover { color: #F5F5F7; }
+.music-badge {
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: .04em;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(245, 166, 35, .12);
+  color: #F5A623;
+}
+
+.music-hero { position: relative; height: 256px; margin-bottom: 12px; }
+.music-arch {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 6px;
+  height: 110px;
+}
+.arch-slot {
+  display: flex;
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+}
+.arch-slot:hover, .arch-slot:focus-within {
+  transform: translateY(calc(var(--dome-y) - 10px)) rotate(var(--dome-rot)) scale(1.08);
+  z-index: 5;
+}
+.arch-card {
+  display: block;
+  width: clamp(44px, 14vw, 72px);
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .08);
+  background: #15151D;
+  cursor: pointer;
+  padding: 0;
+  animation: floaty 3.6s ease-in-out infinite;
+  transition: box-shadow .3s;
+}
+.arch-card:focus-visible { outline: 2px solid #F5A623; outline-offset: 2px; }
+.arch-slot:hover .arch-card, .arch-slot:focus-within .arch-card {
+  box-shadow: 0 14px 28px rgba(245, 166, 35, .25);
+}
+.arch-slot.is-active .arch-card {
+  box-shadow: 0 0 0 2px #F5A623, 0 14px 26px rgba(245, 166, 35, .3);
+}
+.arch-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.music-player {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.vinyl {
+  position: relative;
+  width: 152px;
+  height: 152px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      #1c1c24 0 16%, #15151D 16% 21%,
+      #1c1c24 21% 26%, #15151D 26% 31%,
+      #1c1c24 31% 36%, #15151D 36% 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .06);
+  animation: spin 8s linear infinite;
+  animation-play-state: paused;
+}
+.vinyl.is-playing { animation-play-state: running; }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.vinyl-cover {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 44%; height: 44%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px #0A0A0F, 0 0 0 3px rgba(245, 166, 35, .6);
+}
+.vinyl-arrow {
+  position: absolute;
+  width: 30px; height: 30px;
+  opacity: .2;
+  transition: opacity .3s;
+  pointer-events: none;
+  color: #F5A623;
+}
+.vinyl-arrow--a { top: -8px; left: -8px; }
+.vinyl-arrow--b { bottom: -8px; right: -8px; transform: rotate(180deg); }
+.music-player.is-playing .vinyl-arrow { opacity: .85; }
+
+.play-toggle {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .08);
+  background: #15151D;
+  color: #F5A623;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+.play-toggle:hover { transform: scale(1.06); box-shadow: 0 0 0 4px rgba(245, 166, 35, .12); }
+.play-toggle:active { transform: scale(.95); }
+
+.music-divider { border: 0; border-top: 1px solid rgba(255, 255, 255, .08); margin: 40px 0 24px; }
+
+.music-section-label {
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #8A8A99;
+  margin-bottom: 16px;
+}
+.now-playing-title { font-family: "Inter", sans-serif; font-size: 18px; font-weight: 600; color: #F5F5F7; }
+.now-playing-artist { font-size: 13px; color: #8A8A99; margin-top: 2px; }
+.track-list { list-style: none; padding: 0; margin: 18px 0 0; display: flex; flex-direction: column; gap: 2px; }
+.track-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #F5F5F7;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.track-row:hover { background: rgba(255, 255, 255, .05); }
+.track-row.is-active { color: #F5A623; background: rgba(245, 166, 35, .08); }
+.track-row .track-name { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.track-index { font-family: monospace; font-size: 12px; color: #8A8A99; width: 18px; flex-shrink: 0; }
+.track-duration { font-family: monospace; font-size: 12px; color: #8A8A99; flex-shrink: 0; }
+
+.music-footer { margin-top: 32px; text-align: center; font-size: 12px; color: #8A8A99; }
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-card, .vinyl, .vinyl-arrow, .arch-slot, .play-toggle, .track-row {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+
+<section class="music-page" aria-label="Music">
+  <nav class="music-nav">
+    <a href="/" class="music-back">← ホーム</a>
+    <span class="music-badge">music</span>
+  </nav>
+
+  <div class="music-hero">
+    <div class="music-arch" id="music-arch"></div>
+    <div class="music-player" id="music-player">
+      <div class="vinyl" id="vinyl">
+        <img class="vinyl-cover" id="vinyl-cover" src="" alt="">
+        <svg class="vinyl-arrow vinyl-arrow--a" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12a8 8 0 0 1 13.5-5.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M17.5 3v3.5h-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <svg class="vinyl-arrow vinyl-arrow--b" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12a8 8 0 0 1 13.5-5.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M17.5 3v3.5h-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
       </div>
+      <button type="button" id="play-toggle" class="play-toggle" aria-pressed="false" aria-label="再生">
+        <svg id="play-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M3 1.5v13l11-6.5-11-6.5z" />
+        </svg>
+        <svg id="pause-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:none">
+          <path d="M3 1.5h3.5v13H3v-13zM9.5 1.5H13v13H9.5v-13z" />
+        </svg>
+      </button>
     </div>
-    {% endfor %}
   </div>
-</div>
+
+  <hr class="music-divider" />
+
+  <section aria-label="Contents">
+    <p class="music-section-label">Contents</p>
+    <div>
+      <p class="now-playing-title" id="now-playing-title"></p>
+      <p class="now-playing-artist" id="now-playing-artist"></p>
+    </div>
+    <ul class="track-list" id="track-list"></ul>
+  </section>
+
+  <footer class="music-footer">
+    <p>&copy; 2026 Tkt0605.me — Music</p>
+  </footer>
+</section>
+
+<script>
+(function () {
+  const ALBUMS = [
+    { id: "a1", title: "Midnight Drive", artist: "Nova Reyes", year: 2021, coverUrl: "https://placehold.co/300x300/15151D/F5A623?text=Album+1",
+      tracks: [{ name: "Neon Skyline", duration: "3:42" }, { name: "Glass City", duration: "4:05" }, { name: "After Hours", duration: "3:18" }] },
+    { id: "a2", title: "Paper Moon", artist: "Kaito Sato", year: 2019, coverUrl: "https://placehold.co/300x300/15151D/F5A623?text=Album+2",
+      tracks: [{ name: "Lantern", duration: "2:58" }, { name: "Paper Moon", duration: "3:33" }, { name: "Echo Garden", duration: "4:21" }] },
+    { id: "a3", title: "Static Bloom", artist: "Hollow Pines", year: 2022, coverUrl: "https://placehold.co/300x300/15151D/F5A623?text=Album+3",
+      tracks: [{ name: "Static Bloom", duration: "3:10" }, { name: "Wire & Bone", duration: "3:47" }, { name: "Faded Signal", duration: "4:02" }] },
+    { id: "a4", title: "Low Tide", artist: "Marina Voss", year: 2018, coverUrl: "https://placehold.co/300x300/15151D/F5A623?text=Album+4",
+      tracks: [{ name: "Low Tide", duration: "3:25" }, { name: "Saltwater", duration: "3:59" }, { name: "Shoreline", duration: "3:14" }] },
+    { id: "a5", title: "Amber Hours", artist: "Reno Eclipse", year: 2023, coverUrl: "https://placehold.co/300x300/15151D/F5A623?text=Album+5",
+      tracks: [{ name: "Amber Hours", duration: "4:12" }, { name: "Slow Light", duration: "3:36" }, { name: "Dust & Gold", duration: "3:50" }] },
+    { id: "a6", title: "Vacant Skies", artist: "The Quiet Wires", year: 2020, coverUrl: "https://placehold.co/300x300/15151D/F5A623?text=Album+6",
+      tracks: [{ name: "Vacant Skies", duration: "3:29" }, { name: "Driftwood", duration: "4:08" }, { name: "Last Train", duration: "3:55" }] }
+  ];
+
+  const state = { selectedId: ALBUMS[0].id, isPlaying: false, activeTrackIndex: 0 };
+
+  const archEl = document.getElementById("music-arch");
+  const playerEl = document.getElementById("music-player");
+  const vinylEl = document.getElementById("vinyl");
+  const vinylCoverEl = document.getElementById("vinyl-cover");
+  const playToggleEl = document.getElementById("play-toggle");
+  const playIconEl = document.getElementById("play-icon");
+  const pauseIconEl = document.getElementById("pause-icon");
+  const trackListEl = document.getElementById("track-list");
+  const nowTitleEl = document.getElementById("now-playing-title");
+  const nowArtistEl = document.getElementById("now-playing-artist");
+
+  function getSelectedAlbum() {
+    return ALBUMS.find(function (a) { return a.id === state.selectedId; });
+  }
+
+  function buildArch() {
+    archEl.innerHTML = "";
+    const mid = (ALBUMS.length - 1) / 2;
+    ALBUMS.forEach(function (album, idx) {
+      const domeY = Math.pow(Math.abs(idx - mid), 1.3) * 14;
+      const domeRot = (idx - mid) * 7;
+
+      const slot = document.createElement("div");
+      slot.className = "arch-slot" + (album.id === state.selectedId ? " is-active" : "");
+      slot.style.setProperty("--dome-y", domeY + "px");
+      slot.style.setProperty("--dome-rot", domeRot + "deg");
+      slot.style.transform = "translateY(" + domeY + "px) rotate(" + domeRot + "deg)";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "arch-card";
+      btn.style.animationDelay = (idx * 0.32) + "s";
+      btn.setAttribute("aria-label", album.title + " / " + album.artist + " を再生");
+      btn.setAttribute("aria-pressed", album.id === state.selectedId ? "true" : "false");
+      btn.addEventListener("click", function () { selectAlbum(album.id); });
+
+      const img = document.createElement("img");
+      img.src = album.coverUrl;
+      img.alt = album.title;
+      img.loading = "lazy";
+
+      btn.appendChild(img);
+      slot.appendChild(btn);
+      archEl.appendChild(slot);
+    });
+  }
+
+  function renderPlayer() {
+    const album = getSelectedAlbum();
+    vinylCoverEl.src = album.coverUrl;
+    vinylCoverEl.alt = album.title;
+    vinylEl.classList.toggle("is-playing", state.isPlaying);
+    playerEl.classList.toggle("is-playing", state.isPlaying);
+    playToggleEl.setAttribute("aria-pressed", state.isPlaying ? "true" : "false");
+    playToggleEl.setAttribute("aria-label", state.isPlaying ? "一時停止" : "再生");
+    playIconEl.style.display = state.isPlaying ? "none" : "block";
+    pauseIconEl.style.display = state.isPlaying ? "block" : "none";
+  }
+
+  function renderContents() {
+    const album = getSelectedAlbum();
+    nowTitleEl.textContent = album.title;
+    nowArtistEl.textContent = album.artist + " · " + album.year;
+
+    trackListEl.innerHTML = "";
+    album.tracks.forEach(function (track, idx) {
+      const li = document.createElement("li");
+      li.className = "track-row" + (idx === state.activeTrackIndex ? " is-active" : "");
+      li.setAttribute("role", "button");
+      li.tabIndex = 0;
+      li.addEventListener("click", function () {
+        state.activeTrackIndex = idx;
+        renderContents();
+      });
+      li.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          li.click();
+        }
+      });
+
+      const nameWrap = document.createElement("span");
+      nameWrap.className = "track-name";
+      const index = document.createElement("span");
+      index.className = "track-index";
+      index.textContent = String(idx + 1).padStart(2, "0");
+      const name = document.createElement("span");
+      name.textContent = track.name;
+      nameWrap.appendChild(index);
+      nameWrap.appendChild(name);
+
+      const duration = document.createElement("span");
+      duration.className = "track-duration";
+      duration.textContent = track.duration;
+
+      li.appendChild(nameWrap);
+      li.appendChild(duration);
+      trackListEl.appendChild(li);
+    });
+  }
+
+  function selectAlbum(id) {
+    if (id === state.selectedId) return;
+    state.selectedId = id;
+    state.activeTrackIndex = 0;
+    state.isPlaying = true;
+    buildArch();
+    renderPlayer();
+    renderContents();
+  }
+
+  playToggleEl.addEventListener("click", function () {
+    state.isPlaying = !state.isPlaying;
+    renderPlayer();
+  });
+
+  buildArch();
+  renderPlayer();
+  renderContents();
+})();
+</script>
