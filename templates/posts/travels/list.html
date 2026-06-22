@@ -1,16 +1,15 @@
-<!--　一覧ページ -->
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-  {% for post in posts %}
-  <div class="flex flex-col gap-2">
-    {% if post.image %}
-    <img src="{{ post.image }}" alt="{{ post.title }}" class="w-full aspect-square object-cover rounded-md" loading="lazy">
-    {% endif %}
-    <div class="flex flex-col">
-      <span class="font-medium">{{ post.title }}</span>
+<div class="hobby-stage">
+  <div class="flex flex-wrap gap-4 p-6">
+    {% for post in posts %}
+    <div class="hobby-card hobby-card--wide">
+      {% if post.image %}
+      <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">
+      {% endif %}
+      <span class="hobby-card-title">{{ post.title }}</span>
       {% if post.summary %}
-      <span class="text-sm text-zinc-500">{{ post.summary }}</span>
+      <span class="hobby-card-summary">{{ post.summary }}</span>
       {% endif %}
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 </div>

@@ -1,21 +1,54 @@
-<!--　一覧ページ：アルバムジャケット縦スクロール（ホバーで詳細表示） -->
-<div>
-  Musics
-</div>
-<div class="music-stage">
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 p-6">
-    {% for post in posts %}
-    <div class="group relative aspect-square w-full rounded-md overflow-hidden bg-zinc-100 ring-1 ring-zinc-200">
-      {% if post.image %}
-      <img src="{{ post.image }}" alt="{{ post.title }}" class="w-full h-full object-cover" loading="lazy">
-      {% endif %}
-      <div class="absolute inset-0 flex flex-col justify-end p-3 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <span class="block text-sm font-medium text-white">{{ post.title }}</span>
-        {% if post.summary %}
-        <span class="block text-xs text-zinc-200 mt-1 line-clamp-3">{{ post.summary }}</span>
-        {% endif %}
-      </div>
-    </div>
-    {% endfor %}
+<div class="hobby-detail" id="music-detail">
+  <img class="hobby-detail-img" alt="">
+  <div>
+    <p class="hobby-detail-title"></p>
+    <p class="hobby-detail-summary"></p>
   </div>
 </div>
+<div class="hobby-stage" id="music-stage">
+  <div class="flex flex-wrap gap-4 p-6">
+    {% for post in posts %}
+    <div class="hobby-card" tabindex="0" role="button" aria-label="{{ post.title }}の詳細を表示"
+         data-title="{{ post.title }}" data-summary="{{ post.summary or '' }}" data-image="{{ post.image or '' }}">
+      {% if post.image %}
+      <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div> 
+</div>
+<section>
+  <div></div>
+</section>
+<script>
+(function () {
+  var detail = document.getElementById("music-detail");
+  var stage = document.getElementById("music-stage");
+  if (!detail || !stage) return;
+  var img = detail.querySelector(".hobby-detail-img");
+  var title = detail.querySelector(".hobby-detail-title");
+  var summary = detail.querySelector(".hobby-detail-summary");
+  var cards = stage.querySelectorAll(".hobby-card");
+
+  function show(card) {
+    var src = card.dataset.image;
+    if (src) {
+      img.src = src;
+      img.alt = card.dataset.title || "";
+      img.style.display = "block";
+    } else {
+      img.style.display = "none";
+    }
+    title.textContent = card.dataset.title || "";
+    summary.textContent = card.dataset.summary || "";
+  }
+
+  cards.forEach(function (card) {
+    card.addEventListener("mouseenter", function () { show(card); });
+    card.addEventListener("focus", function () { show(card); });
+    card.addEventListener("click", function () { show(card); });
+  });
+
+  if (cards.length) show(cards[0]);
+})();
+</script>
