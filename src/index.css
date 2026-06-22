@@ -200,3 +200,40 @@
   border-radius: 50%;
   background: #dc2626;
 }
+
+/* travels: 行った国名だけを横に流すマーキー */
+.country-list {
+  overflow: hidden;
+  padding: 1rem 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.country-track {
+  display: flex;
+  gap: 0.75rem;
+  width: max-content;
+  animation: country-scroll 18s linear infinite;
+}
+.country-pill {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #18181b;
+  background: #f4f4f5;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  white-space: nowrap;
+}
+@keyframes country-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .country-track {
+    animation: none;
+  }
+}
