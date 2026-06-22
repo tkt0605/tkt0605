@@ -28,18 +28,30 @@
     {% endif %}
     {% endfor %}
   </div>
-<!-- ここに行った場所の横リストを並べ、流れる設計にしたい。 -->
-{% for post in posts %}
-</div class="country-list">
-  <div class="hobby-detail" id="travel-detail">
-  <img class="hobby-detail-img" alt="">
-  <div>
-    <p class="hobby-detail-title">{{post.title}}</p>
-    <p class="hobby-detail-summary"></p>
+  <!-- <div class="hobby-detail" id="travel-detail">
+    <img class="hobby-detail-img" alt="">
+    <div>
+      <p class="hobby-detail-title"></p>
+      <p class="hobby-detail-summary"></p>
+    </div>
+  </div> -->
+</div>
+<section>
+  <!-- 行った国名だけを横に流すリスト -->
+  {% set countries = posts | selectattr("country") | map(attribute="country") | unique | list %}
+  {% if countries %}
+  <div class="country-list" aria-label="訪れた国" >
+    <div class="country-track">
+      {% for country in countries %}
+      <span class="country-pill">{{ country }}</span>
+      {% endfor %}
+      {% for country in countries %}
+      <span class="country-pill" aria-hidden="true">{{ country }}</span>
+      {% endfor %}
+    </div>
   </div>
-</div>
-{% endfor %}
-</div>
+  {% endif %}
+</section>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
@@ -50,9 +62,9 @@
   var detail = document.getElementById("travel-detail");
   if (!canvas || !wrap || !window.d3 || !window.topojson) return;
 
-  var detailImg = detail.querySelector(".hobby-detail-img");
-  var detailTitle = detail.querySelector(".hobby-detail-title");
-  var detailSummary = detail.querySelector(".hobby-detail-summary");
+  var detailImg = detail ? detail.querySelector(".hobby-detail-img") : null;
+  var detailTitle = detail ? detail.querySelector(".hobby-detail-title") : null;
+  var detailSummary = detail ? detail.querySelector(".hobby-detail-summary") : null;
 
   var markers = Array.prototype.map.call(
     document.querySelectorAll("#travel-pins .travel-pin-data"),
@@ -208,6 +220,7 @@
   }
 
   function showInDetail(marker) {
+    if (!detailImg || !detailTitle || !detailSummary) return;
     if (marker.image) {
       detailImg.src = marker.image;
       detailImg.alt = marker.title;
@@ -220,6 +233,7 @@
   }
 
   function setTooltip(marker, point) {
+    if (!tooltip) return;
     if (!marker || !point) {
       tooltip.classList.remove("is-visible");
       return;
