@@ -1,15 +1,19 @@
-<div class="hobby-detail" id="travel-detail">
-  <img class="hobby-detail-img" alt="">
-  <div>
-    <p class="hobby-detail-title"></p>
-    <p class="hobby-detail-summary"></p>
+<div class="travel-stage">
+  <!-- 地球儀（d3-geo + topojsonで実際の大陸輪郭を描画。drag回転・wheel/pinchズーム） -->
+  <div class="globe-shell">
+    <div class="globe-stage" id="travel-globe-wrap">
+      <canvas id="travel-globe" class="globe-canvas" width="560" height="560" role="img" aria-label="訪れた国を示す地球儀"></canvas>
+      <div class="globe-tooltip" id="travel-tooltip"></div>
+      <div class="globe-hud">
+        <div>drag to rotate</div>
+        <div>wheel or pinch to zoom</div>
+      </div>
+      <div class="globe-legend">
+        <div class="globe-legend-row"><span class="legend-check">✓</span><span>been there</span></div>
+        <div class="globe-legend-row"><span class="legend-pin"></span><span>bucket list</span></div>
+      </div>
+    </div>
   </div>
-</div>
-<div class="hobby-stage">
-  <!-- 地球儀 -->
-  <section class="globe-wrap">
-    <canvas id="travel-globe" class="globe-canvas" width="260" height="260" role="img" aria-label="訪れた国を示す地球儀"></canvas>
-  </section>
   <div id="travel-pins" hidden>
     {% for post in posts %}
     {% if post.lat is defined and post.lng is defined %}
@@ -19,36 +23,38 @@
           data-summary="{{ post.summary or '' }}"
           data-image="{{ post.image or '' }}"
           data-lat="{{ post.lat }}"
-          data-lng="{{ post.lng }}"></span>
+          data-lng="{{ post.lng }}"
+          data-kind="{{ post.kind or 'visited' }}"></span>
     {% endif %}
     {% endfor %}
   </div>
-  <!-- 滞在した国・動的な一覧 -->
-  <div class="flex flex-wrap gap-4 p-6">
-    {% for post in posts %}
-    <div class="hobby-card hobby-card--wide">
-      {% if post.image %}
-      <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">
-      {% endif %}
-      <span class="hobby-card-title">{{ post.title }}</span>
-      {% if post.summary %}
-      <span class="hobby-card-summary">{{ post.summary }}</span>
-      {% endif %}
-    </div>
-    {% endfor %}
+<!-- ここに行った場所の横リストを並べ、流れる設計にしたい。 -->
+{% for post in posts %}
+</div class="country-list">
+  <div class="hobby-detail" id="travel-detail">
+  <img class="hobby-detail-img" alt="">
+  <div>
+    <p class="hobby-detail-title">{{post.title}}</p>
+    <p class="hobby-detail-summary"></p>
   </div>
 </div>
+{% endfor %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
 (function () {
   var canvas = document.getElementById("travel-globe");
+  var wrap = document.getElementById("travel-globe-wrap");
+  var tooltip = document.getElementById("travel-tooltip");
   var detail = document.getElementById("travel-detail");
-  if (!canvas || !detail) return;
+  if (!canvas || !wrap || !window.d3 || !window.topojson) return;
 
   var detailImg = detail.querySelector(".hobby-detail-img");
   var detailTitle = detail.querySelector(".hobby-detail-title");
   var detailSummary = detail.querySelector(".hobby-detail-summary");
 
-  var pins = Array.prototype.map.call(
+  var markers = Array.prototype.map.call(
     document.querySelectorAll("#travel-pins .travel-pin-data"),
     function (el) {
       return {
@@ -56,131 +62,242 @@
         country: el.dataset.country || "",
         summary: el.dataset.summary || "",
         image: el.dataset.image || "",
-        lat: parseFloat(el.dataset.lat),
-        lng: parseFloat(el.dataset.lng)
+        coords: [parseFloat(el.dataset.lng), parseFloat(el.dataset.lat)],
+        kind: el.dataset.kind === "wishlist" ? "wishlist" : "visited"
       };
     }
   );
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var dpr = window.devicePixelRatio || 1;
-  var size = canvas.width; // CSS pixel size (260)
-  canvas.style.width = size + "px";
-  canvas.style.height = size + "px";
-  canvas.width = size * dpr;
-  canvas.height = size * dpr;
-
+  var size = canvas.width; // CSS pixel size (320)
   var ctx = canvas.getContext("2d");
-  ctx.scale(dpr, dpr);
 
-  var cx = size / 2;
-  var cy = size / 2;
-  var radius = size / 2 - 8;
-  var rotation = 0;
-  var hitTargets = [];
+  var projection = d3.geoOrthographic()
+    .translate([size / 2, size / 2])
+    .scale(size * 0.41)
+    .clipAngle(90)
+    .precision(0.3)
+    .rotate([-139, -35]);
 
-  function project(lat, lng, rot) {
-    var latRad = (lat * Math.PI) / 180;
-    var lngRad = (lng * Math.PI) / 180 + rot;
-    var x = Math.cos(latRad) * Math.sin(lngRad);
-    var y = Math.sin(latRad);
-    var z = Math.cos(latRad) * Math.cos(lngRad);
-    return {
-      x: cx + x * radius,
-      y: cy - y * radius,
-      z: z
-    };
+  var path = d3.geoPath(projection, ctx);
+  var graticule = d3.geoGraticule10();
+  var sphere = { type: "Sphere" };
+  var minScale = size * 0.28;
+  var maxScale = size * 0.68;
+
+  var countries = null;
+  var isDragging = false;
+  var dragStart = null;
+  var rotationStart = projection.rotate().slice();
+  var autoSpin = true;
+  var autoSpinTimer = null;
+
+  function clampScale(next) {
+    return Math.max(minScale, Math.min(maxScale, next));
   }
 
-  function showPin(pin) {
-    if (pin.image) {
-      detailImg.src = pin.image;
-      detailImg.alt = pin.title;
-      detailImg.style.display = "block";
-    } else {
-      detailImg.style.display = "none";
+  function scheduleAutoSpin() {
+    if (autoSpinTimer) clearTimeout(autoSpinTimer);
+    autoSpinTimer = setTimeout(function () {
+      if (!isDragging) autoSpin = true;
+    }, 5000);
+  }
+
+  function markInteraction() {
+    autoSpin = false;
+    scheduleAutoSpin();
+  }
+
+  function getVisiblePoint(marker) {
+    var point = projection(marker.coords);
+    if (!point) return null;
+    var center = projection.invert(point);
+    if (!center) return null;
+    return d3.geoDistance(center, marker.coords) < Math.PI / 2 ? point : null;
+  }
+
+  function findMarkerAt(x, y) {
+    for (var i = 0; i < markers.length; i++) {
+      var point = getVisiblePoint(markers[i]);
+      if (!point) continue;
+      var hitRadius = markers[i].kind === "visited" ? 10 : 12;
+      if (Math.hypot(point[0] - x, point[1] - y) <= hitRadius) {
+        return { marker: markers[i], point: point };
+      }
     }
-    detailTitle.textContent = pin.country ? pin.title + " ・ " + pin.country : pin.title;
-    detailSummary.textContent = pin.summary || "";
+    return null;
   }
 
-  function drawCheckmark(x, y, r) {
+  function drawCheck(x, y, alpha) {
+    ctx.save();
+    ctx.translate(Math.round(x), Math.round(y));
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = "#16a34a";
+    ctx.fillRect(-7, -7, 14, 14);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(-4, 0, 2, 2);
+    ctx.fillRect(-2, 2, 2, 2);
+    ctx.fillRect(0, 0, 2, 2);
+    ctx.fillRect(2, -2, 2, 2);
+    ctx.fillRect(4, -4, 2, 2);
+    ctx.restore();
+  }
+
+  function drawPin(x, y, alpha) {
+    ctx.save();
+    ctx.translate(Math.round(x), Math.round(y));
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = "#dc2626";
     ctx.beginPath();
-    ctx.moveTo(x - r * 0.5, y);
-    ctx.lineTo(x - r * 0.1, y + r * 0.4);
-    ctx.lineTo(x + r * 0.5, y - r * 0.4);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
+    ctx.arc(0, -4, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#7f1d1d";
+    ctx.fillRect(-1, 2, 2, 10);
+    ctx.restore();
+  }
+
+  function drawMarker(marker) {
+    var point = projection(marker.coords);
+    if (!point) return;
+    var center = projection.invert(point);
+    if (!center) return;
+    var visible = d3.geoDistance(center, marker.coords) < Math.PI / 2;
+    var alpha = visible ? 1 : 0.2;
+    if (marker.kind === "visited") {
+      drawCheck(point[0], point[1], alpha);
+    } else {
+      drawPin(point[0], point[1] - 2, alpha);
+    }
   }
 
   function draw() {
     ctx.clearRect(0, 0, size, size);
 
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = "#d4d4d8";
-    ctx.lineWidth = 1;
+    path(sphere);
+    ctx.clip();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, size, size);
+
+    if (countries) {
+      ctx.beginPath();
+      path(countries);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.18)";
+      ctx.stroke();
+    }
+
+    ctx.beginPath();
+    path(graticule);
+    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
     ctx.stroke();
 
-    for (var lat = -75; lat <= 75; lat += 15) {
-      for (var lng = 0; lng < 360; lng += 15) {
-        var p = project(lat, lng, rotation);
-        if (p.z <= 0) continue;
-        var depth = (p.z + 1) / 2;
-        var dotR = 0.6 + depth * 1.2;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, dotR, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(24, 24, 27, " + (0.15 + depth * 0.25) + ")";
-        ctx.fill();
-      }
-    }
+    markers.forEach(drawMarker);
+    ctx.restore();
 
-    hitTargets = [];
-    pins.forEach(function (pin) {
-      var p = project(pin.lat, pin.lng, rotation);
-      if (p.z <= 0) return;
-      var depth = (p.z + 1) / 2;
-      var pinR = 5 + depth * 2;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, pinR, 0, Math.PI * 2);
-      ctx.fillStyle = "#18181b";
-      ctx.fill();
-      drawCheckmark(p.x, p.y, pinR);
-      hitTargets.push({ x: p.x, y: p.y, r: pinR + 4, pin: pin });
-    });
+    ctx.beginPath();
+    path(sphere);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.stroke();
   }
 
-  var lastTime = null;
-  function tick(time) {
-    if (lastTime === null) lastTime = time;
-    var dt = time - lastTime;
-    lastTime = time;
-    if (!reduceMotion) {
-      rotation += dt * 0.0002;
+  function showInDetail(marker) {
+    if (marker.image) {
+      detailImg.src = marker.image;
+      detailImg.alt = marker.title;
+      detailImg.style.display = "block";
+    } else {
+      detailImg.style.display = "none";
+    }
+    detailTitle.textContent = marker.country ? marker.title + " ・ " + marker.country : marker.title;
+    detailSummary.textContent = marker.summary || "";
+  }
+
+  function setTooltip(marker, point) {
+    if (!marker || !point) {
+      tooltip.classList.remove("is-visible");
+      return;
+    }
+    tooltip.textContent = marker.title;
+    tooltip.style.left = point[0] + "px";
+    tooltip.style.top = point[1] + "px";
+    tooltip.classList.add("is-visible");
+  }
+
+  function animate() {
+    if (autoSpin && !isDragging && !reduceMotion) {
+      var r = projection.rotate();
+      projection.rotate([r[0] - 0.07, r[1], r[2]]);
     }
     draw();
-    requestAnimationFrame(tick);
+    requestAnimationFrame(animate);
   }
 
-  canvas.addEventListener("click", function (e) {
-    var rect = canvas.getBoundingClientRect();
-    var clickX = e.clientX - rect.left;
-    var clickY = e.clientY - rect.top;
-    var hit = hitTargets.find(function (t) {
-      var dx = t.x - clickX;
-      var dy = t.y - clickY;
-      return Math.sqrt(dx * dx + dy * dy) <= t.r;
-    });
-    if (hit) showPin(hit.pin);
+  canvas.addEventListener("pointerdown", function (e) {
+    isDragging = true;
+    markInteraction();
+    dragStart = [e.clientX, e.clientY];
+    rotationStart = projection.rotate().slice();
+    canvas.setPointerCapture(e.pointerId);
   });
 
-  if (pins.length) showPin(pins[0]);
-  draw();
-  if (!reduceMotion) {
-    requestAnimationFrame(tick);
+  canvas.addEventListener("pointermove", function (e) {
+    if (isDragging && dragStart) {
+      markInteraction();
+      var dx = e.clientX - dragStart[0];
+      var dy = e.clientY - dragStart[1];
+      projection.rotate([
+        rotationStart[0] + dx * 0.35,
+        Math.max(-65, Math.min(65, rotationStart[1] - dy * 0.35)),
+        rotationStart[2]
+      ]);
+      draw();
+      return;
+    }
+    var hit = findMarkerAt(e.offsetX, e.offsetY);
+    setTooltip(hit && hit.marker, hit && hit.point);
+  });
+
+  function stopDragging() {
+    isDragging = false;
+    dragStart = null;
+    scheduleAutoSpin();
   }
+  canvas.addEventListener("pointerup", stopDragging);
+  canvas.addEventListener("pointercancel", stopDragging);
+  canvas.addEventListener("pointerleave", function () {
+    setTooltip(null, null);
+    stopDragging();
+  });
+
+  canvas.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    markInteraction();
+    projection.scale(clampScale(projection.scale() * (e.deltaY > 0 ? 0.94 : 1.06)));
+    draw();
+  });
+
+  canvas.addEventListener("click", function (e) {
+    var hit = findMarkerAt(e.offsetX, e.offsetY);
+    if (hit) showInDetail(hit.marker);
+  });
+
+  if (markers.length) showInDetail(markers[0]);
+  draw();
+  requestAnimationFrame(animate);
+
+  fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+    .then(function (res) { return res.json(); })
+    .then(function (world) {
+      countries = topojson.feature(world, world.objects.countries);
+      draw();
+    })
+    .catch(function () {});
 })();
 </script>

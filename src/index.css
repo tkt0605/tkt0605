@@ -101,13 +101,102 @@
   margin-top: 0.15rem;
 }
 
-/* travels: Canvas 2Dの疑似3D地球儀 */
-.globe-wrap {
+/* travels: d3-geo + topojsonによる本物の大陸輪郭の地球儀（drag回転・wheel/pinchズーム） */
+.globe-shell {
+  /* display: flex;
+  justify-content: center; */
+  padding: 0.5rem 0 0.5rem;
+}
+.globe-stage {
+  position: relative;
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 1.5rem 0 0.5rem;
+  padding: 0.05rem;
+  border-radius: 16px;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 18px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 18px),
+    #fafafa;
+  cursor: grab;
+  touch-action: none;
+}
+.travel-stage{
+  position: relative;
+  max-height: 580px;
+  overflow-y: auto;
+}
+.globe-stage:active {
+  cursor: grabbing;
 }
 .globe-canvas {
-  cursor: pointer;
-  touch-action: none;
+  width: min(76vw, 540px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.12));
+}
+@media (min-width: 640px) {
+  .globe-canvas {
+    width: 560px;
+    height: 560px;
+  }
+}
+.globe-tooltip {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -130%);
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #18181b;
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.globe-tooltip.is-visible {
+  opacity: 1;
+}
+.globe-hud {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: monospace;
+  font-size: 0.62rem;
+  color: #a1a1aa;
+  line-height: 1.5;
+}
+.globe-legend {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  font-size: 0.7rem;
+  color: #52525b;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.globe-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.legend-check {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.legend-pin {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #dc2626;
 }
