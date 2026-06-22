@@ -100,3 +100,14 @@
   color: #71717a;
   margin-top: 0.15rem;
 }
+
+/* travels: Canvas 2Dの疑似3D地球儀 */
+.globe-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0 0.5rem;
+}
+.globe-canvas {
+  cursor: pointer;
+  touch-action: none;
+}

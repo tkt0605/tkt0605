@@ -1,4 +1,29 @@
+<div class="hobby-detail" id="travel-detail">
+  <img class="hobby-detail-img" alt="">
+  <div>
+    <p class="hobby-detail-title"></p>
+    <p class="hobby-detail-summary"></p>
+  </div>
+</div>
 <div class="hobby-stage">
+  <!-- 地球儀 -->
+  <section class="globe-wrap">
+    <canvas id="travel-globe" class="globe-canvas" width="260" height="260" role="img" aria-label="訪れた国を示す地球儀"></canvas>
+  </section>
+  <div id="travel-pins" hidden>
+    {% for post in posts %}
+    {% if post.lat is defined and post.lng is defined %}
+    <span class="travel-pin-data"
+          data-title="{{ post.title }}"
+          data-country="{{ post.country or '' }}"
+          data-summary="{{ post.summary or '' }}"
+          data-image="{{ post.image or '' }}"
+          data-lat="{{ post.lat }}"
+          data-lng="{{ post.lng }}"></span>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <!-- 滞在した国・動的な一覧 -->
   <div class="flex flex-wrap gap-4 p-6">
     {% for post in posts %}
     <div class="hobby-card hobby-card--wide">
@@ -13,3 +38,149 @@
     {% endfor %}
   </div>
 </div>
+<script>
+(function () {
+  var canvas = document.getElementById("travel-globe");
+  var detail = document.getElementById("travel-detail");
+  if (!canvas || !detail) return;
+
+  var detailImg = detail.querySelector(".hobby-detail-img");
+  var detailTitle = detail.querySelector(".hobby-detail-title");
+  var detailSummary = detail.querySelector(".hobby-detail-summary");
+
+  var pins = Array.prototype.map.call(
+    document.querySelectorAll("#travel-pins .travel-pin-data"),
+    function (el) {
+      return {
+        title: el.dataset.title || "",
+        country: el.dataset.country || "",
+        summary: el.dataset.summary || "",
+        image: el.dataset.image || "",
+        lat: parseFloat(el.dataset.lat),
+        lng: parseFloat(el.dataset.lng)
+      };
+    }
+  );
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var dpr = window.devicePixelRatio || 1;
+  var size = canvas.width; // CSS pixel size (260)
+  canvas.style.width = size + "px";
+  canvas.style.height = size + "px";
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+
+  var ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  var cx = size / 2;
+  var cy = size / 2;
+  var radius = size / 2 - 8;
+  var rotation = 0;
+  var hitTargets = [];
+
+  function project(lat, lng, rot) {
+    var latRad = (lat * Math.PI) / 180;
+    var lngRad = (lng * Math.PI) / 180 + rot;
+    var x = Math.cos(latRad) * Math.sin(lngRad);
+    var y = Math.sin(latRad);
+    var z = Math.cos(latRad) * Math.cos(lngRad);
+    return {
+      x: cx + x * radius,
+      y: cy - y * radius,
+      z: z
+    };
+  }
+
+  function showPin(pin) {
+    if (pin.image) {
+      detailImg.src = pin.image;
+      detailImg.alt = pin.title;
+      detailImg.style.display = "block";
+    } else {
+      detailImg.style.display = "none";
+    }
+    detailTitle.textContent = pin.country ? pin.title + " ・ " + pin.country : pin.title;
+    detailSummary.textContent = pin.summary || "";
+  }
+
+  function drawCheckmark(x, y, r) {
+    ctx.beginPath();
+    ctx.moveTo(x - r * 0.5, y);
+    ctx.lineTo(x - r * 0.1, y + r * 0.4);
+    ctx.lineTo(x + r * 0.5, y - r * 0.4);
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = "#d4d4d8";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    for (var lat = -75; lat <= 75; lat += 15) {
+      for (var lng = 0; lng < 360; lng += 15) {
+        var p = project(lat, lng, rotation);
+        if (p.z <= 0) continue;
+        var depth = (p.z + 1) / 2;
+        var dotR = 0.6 + depth * 1.2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, dotR, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(24, 24, 27, " + (0.15 + depth * 0.25) + ")";
+        ctx.fill();
+      }
+    }
+
+    hitTargets = [];
+    pins.forEach(function (pin) {
+      var p = project(pin.lat, pin.lng, rotation);
+      if (p.z <= 0) return;
+      var depth = (p.z + 1) / 2;
+      var pinR = 5 + depth * 2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, pinR, 0, Math.PI * 2);
+      ctx.fillStyle = "#18181b";
+      ctx.fill();
+      drawCheckmark(p.x, p.y, pinR);
+      hitTargets.push({ x: p.x, y: p.y, r: pinR + 4, pin: pin });
+    });
+  }
+
+  var lastTime = null;
+  function tick(time) {
+    if (lastTime === null) lastTime = time;
+    var dt = time - lastTime;
+    lastTime = time;
+    if (!reduceMotion) {
+      rotation += dt * 0.0002;
+    }
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  canvas.addEventListener("click", function (e) {
+    var rect = canvas.getBoundingClientRect();
+    var clickX = e.clientX - rect.left;
+    var clickY = e.clientY - rect.top;
+    var hit = hitTargets.find(function (t) {
+      var dx = t.x - clickX;
+      var dy = t.y - clickY;
+      return Math.sqrt(dx * dx + dy * dy) <= t.r;
+    });
+    if (hit) showPin(hit.pin);
+  });
+
+  if (pins.length) showPin(pins[0]);
+  draw();
+  if (!reduceMotion) {
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
