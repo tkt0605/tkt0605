@@ -18,32 +18,30 @@
     {% endfor %}
   </div>
 </div>
-<div class="flex flex-col p-2">
+<div class="flex flex-col p-2 gap-2">
+  {% set situations = [
+    {"key": "morning", "label": "朝に聴く曲"},
+    {"key": "up", "label": "テンション上がる曲"},
+    {"key": "night", "label": "夜に聴く曲"}
+  ] %}
+  {% for situation in situations %}
+  {% set authors = [] %}
+  {% for post in posts %}
+  {% if post.situation == situation.key and post.author and post.author not in authors %}
+  {% set _ = authors.append(post.author) %}
+  {% endif %}
+  {% endfor %}
+  {% if authors %}
   <section class="hobby-lineup-row">
     <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">朝に聴く曲</span>
+      <span class="hobby-vibe-name">{{ situation.label }}</span>
     </div>
     <div class="hobby-lineup-detail">
-      <p>ONE OK ROCK</p>
-      <p>クイーン</p>
-      <p>ジャクソン５</p>
+      {% for author in authors %}
+      <p>{{ author }}</p>
+      {% endfor %}
     </div>
   </section>
-  <section class="hobby-lineup-row">
-    <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">テンション上がる曲</span>
-    </div>
-    <div class="hobby-lineup-detail">
-      <p>ONE OK ROCK</p>
-      <p>クイーン</p>
-    </div>
-  </section>
-  <ssection class="hobby-lineup-row">
-    <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">夜に聴く曲</span>
-    </div>
-    <div class="hobby-lineup-detail">
-      <p>マイケル・ジャクソン</p>
-    </div>
-  </section>
+  {% endif %}
+  {% endfor %}
 </div>

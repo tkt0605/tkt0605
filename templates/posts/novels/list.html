@@ -10,46 +10,38 @@
       </div>
       <div class="novel-card-info">
         <div class="novel-card-title">{{ post.title }}</div>
-        <div class="novel-card-auther">
-          {{ post.auther }}
-        </div>
-        <!-- {% if post.summary %}
-        <div class="novel-card-summary">{{ post.summary }}</div>
-        {% endif %} -->
+        {% if post.auther %}
+        <div class="novel-card-auther">{{ post.auther }}</div>
+        {% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
 </div>
-<div class="flex flex-col p-2">
+<div class="flex flex-col p-2 gap-2">
+  {% set genres = [
+    {"key": "japan", "label": "日本小説"},
+    {"key": "abroad", "label": "海外小説"},
+    {"key": "SF", "label": "SF小説"}
+  ] %}
+  {% for genre in genres %}
+  {% set authers = [] %}
+  {% for post in posts %}
+  {% if post.genre == genre.key and post.auther and post.auther not in authers %}
+  {% set _ = authers.append(post.auther) %}
+  {% endif %}
+  {% endfor %}
+  {% if authers %}
   <section class="hobby-lineup-row">
     <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">日本小説</span>
+      <span class="hobby-vibe-name">{{ genre.label }}</span>
     </div>
     <div class="hobby-lineup-detail">
-      <p>太宰治</p>
+      {% for auther in authers %}
+      <p>{{ auther }}</p>
+      {% endfor %}
     </div>
   </section>
-
-  <section class="hobby-lineup-row">
-    <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">海外小説</span>
-    </div>
-    <div class="hobby-lineup-detail">
-      <p>ヴィクトル・ユーゴー</p>
-      <p>ドストエフスキー</p>
-      <p>スコットフィッツ・ジェラルド</p>
-    </div>
-  </section>
-
-  <section class="hobby-lineup-row">
-    <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">SF小説</span>
-    </div>
-    <div class="hobby-lineup-detail">
-      <p>アーサー・C・クラーク</p>
-      <p>ジョージ・オーウェル</p>
-      <p>リウ・ツーシン</p>
-    </div>
-  </section>
+  {% endif %}
+  {% endfor %}
 </div>
