@@ -397,8 +397,8 @@
 
 .hobby-lineup-row{
   display: grid;
-  grid-template-columns: 80px 150px minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: 200px 550px minmax(0, 1fr);
+  gap: 5  rem;
   align-items: start;
 }
 .hobby-lineup-label{
