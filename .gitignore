@@ -4,3 +4,4 @@ dist/
 __pycache__/
 posts/
 .DS_Store
+CLAUDE.md
