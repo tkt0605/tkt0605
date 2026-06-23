@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-<a href="/" class="text-sm text-zinc-400 hover:text-zinc-900 transition-colors">← ホームへ</a>
+<a href="/" class="text-sm text-zinc-400 hover:text-zinc-900 transition-colors">← ホームへ/{{ folder_title }}</a>
 {{ list_html | safe }}
 {% endblock %}
