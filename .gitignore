@@ -5,3 +5,4 @@ __pycache__/
 posts/
 .DS_Store
 CLAUDE.md
+.claude/
