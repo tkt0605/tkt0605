@@ -394,3 +394,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.hobby-lineup-row{
+  display: grid;
+  grid-template-columns: 80px 150px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.hobby-lineup-label{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+}
+.hobby-vibe-name{
+  display: inline-block;
+  /* padding: 2rem 0.5rem; */
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  /* background: #2bd9b4;   */
+  color: #111111;
+  text-transform: uppercase;
+}
+.hobby-lineup-detail{
+
+}
