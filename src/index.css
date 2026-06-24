@@ -28,6 +28,7 @@
   max-height: 450px;
   overflow-y: auto;
   min-width: 520px;
+  border-bottom: 1px solid #e4e4e7;
 }
 .hobby-stage::-webkit-scrollbar {
   width: 8px;
@@ -87,6 +88,7 @@
   max-height: 500px;
   overflow-y: auto;
   min-width: 520px;
+  border-bottom: 1px solid #e4e4e7;
 }
 .music-stage::-webkit-scrollbar {
   width: 8px;
@@ -165,8 +167,8 @@
   min-height: 96px;
 }
 .hobby-detail-img {
-  width: 64px;
-  height: 64px;
+  width: 150px;
+  height: 200px;
   border-radius: 10px;
   object-fit: cover;
   flex-shrink: 0;
@@ -202,6 +204,7 @@
     #fafafa;
   cursor: grab;
   touch-action: none;
+  border-bottom: 1px solid #e4e4e7;
 }
 .travel-stage{
   position: relative;
@@ -321,12 +324,17 @@
 }
 
 .novels-stage {
-  position: relative;
+  /* position: relative;
   display: flex;
   justify-content: center;
   max-height: 500px;
   overflow-y: auto;
-  min-width: 520px;
+  min-width: 520px; */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e4e4e7;
 }
 .novels-stage::-webkit-scrollbar {
   width: 8px;
@@ -341,7 +349,6 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #e4e4e7;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -351,8 +358,8 @@
   outline: none;
 }
 .novel-card-cover {
-  width: 50px;
-  height: 50px;
+  width: 150px;
+  height: 200px;
   flex-shrink: 0;
   border-radius: 6px;
   overflow: hidden;
