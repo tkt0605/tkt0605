@@ -22,32 +22,48 @@
           data-country="{{ post.country or '' }}"
           data-summary="{{ post.summary or '' }}"
           data-image="{{ post.image or '' }}"
+          data-flag="{{ post.flag or '' }}"
           data-lat="{{ post.lat }}"
           data-lng="{{ post.lng }}"
           data-kind="{{ post.kind or 'visited' }}"></span>
     {% endif %}
     {% endfor %}
   </div>
-  <!-- <div class="hobby-detail" id="travel-detail">
-    <img class="hobby-detail-img" alt="">
-    <div>
-      <p class="hobby-detail-title"></p>
-      <p class="hobby-detail-summary"></p>
-    </div>
-  </div> -->
 </div>
 <section>
-  <!-- 行った国名だけを横に流すリスト -->
-  {% set countries = posts | selectattr("country") | map(attribute="country") | unique | list %}
+  <!-- 行った国名だけを横に流すリスト（国旗付き） -->
+  {% set countries = [] %}
+  {% set country_flags = {} %}
+  {% for post in posts %}
+  {% if post.country and post.country not in countries %}
+  {% set _ = countries.append(post.country) %}
+  {% set _ = country_flags.update({post.country: post.flag or ''}) %}
+  {% endif %}
+  {% endfor %}
   {% if countries %}
   <div class="country-list" aria-label="訪れた国" >
     <div class="country-track">
       {% for country in countries %}
-      <span class="country-pill">{{ country }}</span>
+      <span class="country-pill">
+        {% if country_flags[country] %}
+        <img class="country-pill-flag" src="{{ country_flags[country] }}" alt="" loading="lazy">
+        {% endif %}
+        {{ country }}
+      </span>
       {% endfor %}
     </div>
   </div>
   {% endif %}
+  <div class="hobby-detail" id="travel-detail">
+    <img class="hobby-detail-img" alt="">
+    <div>
+      <div class="hobby-detail-title-row">
+        <img class="hobby-detail-flag" alt="">
+        <p class="hobby-detail-title"></p>
+      </div>
+      <p class="hobby-detail-summary"></p>
+    </div>
+  </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
@@ -60,6 +76,7 @@
   if (!canvas || !wrap || !window.d3 || !window.topojson) return;
 
   var detailImg = detail ? detail.querySelector(".hobby-detail-img") : null;
+  var detailFlag = detail ? detail.querySelector(".hobby-detail-flag") : null;
   var detailTitle = detail ? detail.querySelector(".hobby-detail-title") : null;
   var detailSummary = detail ? detail.querySelector(".hobby-detail-summary") : null;
 
@@ -71,6 +88,7 @@
         country: el.dataset.country || "",
         summary: el.dataset.summary || "",
         image: el.dataset.image || "",
+        flag: el.dataset.flag || "",
         coords: [parseFloat(el.dataset.lng), parseFloat(el.dataset.lat)],
         kind: el.dataset.kind === "wishlist" ? "wishlist" : "visited"
       };
@@ -224,6 +242,15 @@
       detailImg.style.display = "block";
     } else {
       detailImg.style.display = "none";
+    }
+    if (detailFlag) {
+      if (marker.flag) {
+        detailFlag.src = marker.flag;
+        detailFlag.alt = marker.country;
+        detailFlag.style.display = "inline-block";
+      } else {
+        detailFlag.style.display = "none";
+      }
     }
     detailTitle.textContent = marker.country ? marker.title + " ・ " + marker.country : marker.title;
     detailSummary.textContent = marker.summary || "";
