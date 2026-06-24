@@ -197,6 +197,19 @@
   color: #71717a;
   margin-top: 0.15rem;
 }
+.hobby-detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.hobby-detail-flag {
+  width: 20px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  display: none;
+}
 
 /* travels: d3-geo + topojsonによる本物の大陸輪郭の地球儀（drag回転・wheel/pinchズーム） */
 .globe-shell {
@@ -314,6 +327,9 @@
 }
 .country-pill {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 0.8rem;
   font-weight: 600;
   color: #18181b;
@@ -321,6 +337,13 @@
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
   white-space: nowrap;
+}
+.country-pill-flag {
+  width: 18px;
+  height: 13px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 @keyframes country-scroll {
   from {
