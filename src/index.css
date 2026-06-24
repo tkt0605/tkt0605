@@ -44,10 +44,15 @@
   padding: 1.5rem;
 }
 .hobby-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   width: 100%;
+}
+.hobby-card:hover,
+.hobby-card:focus-within {
+  z-index: 10;
 }
 .hobby-card img {
   width: 100%;
@@ -55,6 +60,14 @@
   object-fit: cover;
   border-radius: 10px;
   display: block;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transform-origin: center;
+}
+.hobby-card:hover img,
+.hobby-card:focus img,
+.hobby-card:focus-within img {
+  transform: scale(1.12);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
 }
 .hobby-card-title {
   font-size: 0.85rem;
@@ -345,24 +358,27 @@
 }
 
 .novel-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
-  transition: background-color 0.15s ease;
 }
 .novel-card:hover,
+.novel-card:focus-within {
+  z-index: 10;
+}
 .novel-card:focus {
-  background-color: #f4f4f5;
   outline: none;
 }
 .novel-card-cover {
+  position: relative;
   width: 150px;
   height: 200px;
   flex-shrink: 0;
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible;
   background-color: #e4e4e7;
 }
 .novel-card-cover img {
@@ -371,6 +387,15 @@
   aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
+  border-radius: 6px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transform-origin: center;
+}
+.novel-card:hover .novel-card-cover img,
+.novel-card:focus .novel-card-cover img,
+.novel-card:focus-within .novel-card-cover img {
+  transform: scale(1.12);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
 }
 .novel-card-info {
   display: flex;
