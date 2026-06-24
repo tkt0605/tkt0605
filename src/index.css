@@ -397,7 +397,7 @@
 
 .hobby-lineup-row{
   display: grid;
-  grid-template-columns: 200px 550px minmax(0, 1fr);
+  grid-template-columns: 200px 600px minmax(0, 1fr);
   gap: 2.5rem;
   /* align-items: start; */
   align-items: center;
@@ -420,5 +420,8 @@
   text-transform: uppercase;
 }
 .hobby-lineup-detail{
-
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: start;
 }
