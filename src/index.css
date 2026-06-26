@@ -3,34 +3,41 @@
 @tailwind utilities;
 @import "tailwindcss";
 
-.project-img-wrap {
-  width: 30%;
-  height: 50%;
-  aspect-ratio: 16 / 9;      /* 枠の比率を固定。好みで 4/3 や 1/1 に */
+.project-flex-bord {
   display: flex;
-  align-items: center;        /* 縦中央 */
-  justify-content: center;    /* 横中央 */
-  overflow: hidden; 
-  background: #0f0f0f;        /* 余白が出たときの背景 */
+  flex-direction: column;
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .project-flex-bord {
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.project-img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0f0f0f;
+  flex-shrink: 0;
+}
+@media (min-width: 768px) {
+  .project-img-wrap {
+    width: 55%;
+  }
 }
 
 .project-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;          /* 枠を埋める。見切れてOKならcover */
+  object-fit: cover;
   display: block;
-}
-@media (min-width: 400px){
-  .project-flex-bord{
-    display: block;
-    align-items: center;
-    gap: 2rem;
-  }
-}
-.project-flex-bord{
-  display: flex;
-  align-items: center;
-  gap: 2rem;
 }
 /* hobby系（movies/musics/novels/travels）の一覧カードで共通使用
 
