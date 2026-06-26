@@ -6,7 +6,7 @@
   </div>
 </div>
 <div class="novels-stage" id="novel-stage">
-  <div class="flex" style="width: 400px;">
+  <div class="novels-grid">
     {% for post in posts %}
     <div class="novel-card" tabindex="0" role="button" aria-label="{{ post.title }}の詳細を表示"
          data-title="{{ post.title }}" data-summary="{{ post.summary or '' }}" data-image="{{ post.image or '' }}">
