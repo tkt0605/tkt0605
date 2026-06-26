@@ -10,8 +10,7 @@
   display: flex;
   align-items: center;        /* 縦中央 */
   justify-content: center;    /* 横中央 */
-  overflow: hidden;
-  border-radius: 12px;
+  overflow: hidden; 
   background: #0f0f0f;        /* 余白が出たときの背景 */
 }
 
@@ -21,8 +20,21 @@
   object-fit: cover;          /* 枠を埋める。見切れてOKならcover */
   display: block;
 }
+@media (min-width: 400px){
+  .project-flex-bord{
+    display: block;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+.project-flex-bord{
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+/* hobby系（movies/musics/novels/travels）の一覧カードで共通使用
 
-/* hobby系（movies/musics/novels/travels）の一覧カードで共通使用 */
+*/
 .hobby-stage {
   position: relative;
   max-height: 450px;
