@@ -100,6 +100,7 @@
   max-height: 500px;
   overflow-y: auto;
   border-bottom: 1px solid #e4e4e7;
+  padding-top: 20px;
 }
 .music-stage::-webkit-scrollbar {
   width: 8px;
@@ -383,34 +384,32 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  width: 150px;
+  width: 100%;
   cursor: pointer;
 }
 .novel-card:hover,
 .novel-card:focus-within {
   z-index: 10;
 }
-.novel-card-cover {
+/* .novel-card-cover {
   width: 150px;
   height: 200px;
   border-radius: 6px;
   overflow: hidden;
   background-color: #e4e4e7;
-}
-.novel-card-cover img {
+} */
+.novel-card img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
   border-radius: 6px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  transform-origin: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.novel-card:hover .novel-card-cover img,
-.novel-card:focus .novel-card-cover img,
-.novel-card:focus-within .novel-card-cover img {
-  transform: scale(1.12);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+.novel-card:hover img,
+.novel-card:focus-within img {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 .novel-card-info {
   display: flex;
