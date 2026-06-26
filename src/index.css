@@ -358,9 +358,26 @@
 }
 
 .novels-stage {
-  display: block;
-  padding: 1.5rem;
+  display: relative;
+  max-height: 450px;
+  overflow-y: auto;
   border-bottom: 1px solid #e4e4e7;
+}
+@media (min-width: 400px) {
+  .novels-stage {
+    display: relative;
+    max-height: 379px;
+    overflow-y: auto;
+    border-bottom: 1px solid #e4e4e7;
+  }
+  .music-stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    max-height: 400px;
+    overflow-y: auto;
+    border-bottom: 1px solid #e4e4e7;
+  }
 }
 .novels-stage::-webkit-scrollbar {
   width: 8px;
@@ -372,8 +389,9 @@
 
 .novels-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;  
 }
 
 .novel-card {
@@ -396,12 +414,12 @@
   aspect-ratio: 3 / 4;
   flex-shrink: 0;
   border-radius: 6px;
-  overflow: hidden;
-  background-color: #e4e4e7;
-}
-.novel-card-cover img {
+  overflow: auto;
   width: 150px;
   height: 200px;
+}
+.novel-card-cover img {
+  width: 100%;
   object-fit: cover;
   display: block;
   border-radius: 6px;
