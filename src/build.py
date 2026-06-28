@@ -20,6 +20,10 @@ parser.add_argument("--no-clean", action="store_true")
 args = parser.parse_args()
 
 script_path = os.path.dirname(os.path.realpath(__file__))
+root_path = os.path.normpath(os.path.join(script_path, ".."))
+
+if not os.path.isabs(args.output):
+    args.output = os.path.join(root_path, args.output)
 
 env = Environment(
     loader=FileSystemLoader(os.path.join(script_path, "..", "templates")),
@@ -72,7 +76,7 @@ make_html = mistune.create_markdown(
 
 
 def get_post(folder, file):
-    obj = frontmatter.load(f"posts/{folder}/{file}")
+    obj = frontmatter.load(os.path.join(root_path, "posts", folder, file))
     obj.content = make_html(obj.content)
     obj["slug"] = file.replace(".md", "")
     obj["href"] = f"/{folder}/{obj['slug']}"
@@ -99,12 +103,13 @@ def load_content(path):
 
 
 # posts/ 以下のフォルダを自動検出してビルド
-post_folders = [f for f in os.listdir("posts") if os.path.isdir(f"posts/{f}")]
+posts_dir = os.path.join(root_path, "posts")
+post_folders = [f for f in os.listdir(posts_dir) if os.path.isdir(os.path.join(posts_dir, f))]
 lists = {}
 posts_by_folder = {}
 
 for folder in post_folders:
-    files = [f for f in os.listdir(f"posts/{folder}") if f.endswith(".md")]
+    files = [f for f in os.listdir(os.path.join(posts_dir, folder)) if f.endswith(".md")]
     posts = [get_post(folder, f) for f in files]
     posts = sorted(posts, key=lambda x: (not x["pin"], x["order"]))
 
@@ -153,9 +158,9 @@ seo_common = {
     "description": f"{name}'s personal website",
     "type": "profile",
 }
-whoami = load_content("content/information/whoami.md")
-hobby = load_content("content/mylist/hobby.md")
-experience = load_content("content/experience/experience.md")
+whoami = load_content(os.path.join(root_path, "content/information/whoami.md"))
+hobby = load_content(os.path.join(root_path, "content/mylist/hobby.md"))
+experience = load_content(os.path.join(root_path, "content/experience/experience.md"))
 index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby, experience=experience, projects=posts_by_folder.get("projects", []))
 for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
