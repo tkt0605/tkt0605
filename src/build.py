@@ -1,6 +1,6 @@
 import os
 import argparse
-from shutil import rmtree
+from shutil import rmtree, copytree, copy2
 from urllib.parse import urljoin
 
 import mistune
@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNot
 first_name = "Takato"
 last_name = "Komada"
 name = f"{first_name} {last_name}"
-domain = "localhost"  # TODO: カスタムドメインに変更
+domain = "tkt0605.me"
 url = f"https://{domain}"
 
 parser = argparse.ArgumentParser(description="Build the website")
@@ -161,4 +161,15 @@ for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
 write_output(index_soup.encode_contents().decode("utf-8"), "index.html")
 
+# public/の静的アセットを出力Directotryにコピー
+public_dir = os.path.join(script_path, "..", "public")
+if os.path.isdir(public_dir):
+    for entry in os.listdir(public_dir):
+        src_p = os.path.join(public_dir, entry)
+        dst_p = os.path.join(args.output, entry)
+        if os.path.isdir(src_p):
+            copytree(src_p, dst_p, dirs_exist_ok=True)
+        else:
+            copy2(src_p, dst_p)
+    print("Copied public/ into output.")
 print("Build complete.")
