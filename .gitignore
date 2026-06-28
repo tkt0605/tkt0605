@@ -2,7 +2,6 @@ node_modules/
 dist/
 .venv/
 __pycache__/
-posts/
 .DS_Store
 CLAUDE.md
 .claude/
