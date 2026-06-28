@@ -4,13 +4,17 @@
 
 <!-- Profile写真 -->
 <div class="flex flex-col items-center mt-4 mb-8 gap-3">
-    <div class="relative w-56 h-56 cursor-pointer" id="profile-photo">
-        <img alt="takato komadaの肖像画" class="absolute inset-0 w-full h-full object-cover rounded-full ring-2 ring-zinc-200 transition-opacity duration-500" decoding="async" loading="eager" src="/assets/IMG_6345.jpg">
-        <img id="easter-egg-photo" alt="takato komadaの写真・イースターエッグ" class="absolute inset-0 w-full h-full object-cover rounded-full ring-2 ring-zinc-200 transition-opacity duration-500 opacity-0" decoding="async" loading="lazy" src="/assets/istockphoto-1208348858-1024x1024.jpg">
+    <div class="relative w-64 h-64 md:w-72 md:h-72 cursor-pointer" id="profile-photo">
+        <img alt="takato komadaの肖像画"
+            class="absolute inset-0 w-full h-full object-cover object-top rounded-full ring-4 ring-zinc-200 shadow-lg transition-opacity duration-500"
+            decoding="async"
+            loading="eager"
+            src="/assets/me/me_alt.png"
+        >
     </div>
     <p class="text-center mt-3 text-lg font-semibold">駒田 隆人 / Takato Komada</p>
-    <p class="text-center text-sm text-zinc-500">日本大学 / 理工学部</p>
-    <p id="easter-egg-name" class="easter-egg-note hidden text-center text-sm text-zinc-400 mt-1">イースターエッグを見つけてくれたんですね！</p>
+    <p class="text-center text-sm text-zinc-500">日本大学・理工学部</p>
+    <p class="text-center text-sm text-zinc-500">Webアプリ開発者 / AI-native productを作っています</p>
 </div>
 <script>
     const photo    = document.getElementById('profile-photo');
