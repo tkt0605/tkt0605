@@ -1,4 +1,4 @@
-name: Deploy to Gituhub Pages
+name: Deploy to Github Pages
 on:
   push:
     branches: [main]
@@ -23,7 +23,7 @@ jobs:
       
       - uses: actions/setup-node@v4
         with:
-          version: 20
+          node-version: 20
           cache: pnpm
       
       - uses: astral-sh/setup-uv@v5
@@ -35,12 +35,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with: 
           path: dist
-deploy:
-  needs: build
-  runs-on: ubuntu-latest
-  environment:
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-  steps:
-    - uses: actions/deploy-pages@v4
-      id: deployment
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
