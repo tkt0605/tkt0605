@@ -187,6 +187,19 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.music-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  color: #71717a;
+}
+.music-card-link:hover {
+  color: #18181b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 
 /* カードにカーソルを置く/クリック/タップした対象の詳細（写真・名前・要約）を表示するパネル */
@@ -227,6 +240,19 @@
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   display: none;
+}
+.hobby-detail-link {
+  display: none;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: #71717a;
+}
+.hobby-detail-link:hover {
+  color: #18181b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* travels: d3-geo + topojsonによる本物の大陸輪郭の地球儀（drag回転・wheel/pinchズーム） */
