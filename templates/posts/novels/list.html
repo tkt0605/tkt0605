@@ -3,13 +3,21 @@
   <div>
     <p class="hobby-detail-title"></p>
     <p class="hobby-detail-summary"></p>
+    <a class="hobby-detail-link" target="_blank" rel="noopener noreferrer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+        <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+      </svg>
+      外部リンク
+    </a>
   </div>
 </div>
 <div class="novels-stage" id="novel-stage">
   <div class="novels-grid">
     {% for post in posts %}
     <div class="novel-card" tabindex="0" role="button" aria-label="{{ post.title }}の詳細を表示"
-         data-title="{{ post.title }}" data-summary="{{ post.summary or '' }}" data-image="{{ post.image or '' }}">
+         data-title="{{ post.title }}" data-summary="{{ post.summary or '' }}" data-image="{{ post.image or '' }}"
+         data-url="{{ post.url or '' }}">
         {% if post.image %}
         <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">
         {% endif %}
@@ -52,6 +60,7 @@
   var img = detail.querySelector(".hobby-detail-img");
   var title = detail.querySelector(".hobby-detail-title");
   var summary = detail.querySelector(".hobby-detail-summary");
+  var link = detail.querySelector(".hobby-detail-link");
   var cards = stage.querySelectorAll(".novel-card");
 
   function show(card) {
@@ -65,6 +74,15 @@
     }
     title.textContent = card.dataset.title || "";
     summary.textContent = card.dataset.summary || "";
+    if (link) {
+      var url = card.dataset.url;
+      if (url) {
+        link.href = url;
+        link.style.display = "inline-flex";
+      } else {
+        link.style.display = "none";
+      }
+    }
   }
 
   cards.forEach(function (card) {

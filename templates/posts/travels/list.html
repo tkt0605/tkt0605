@@ -25,7 +25,8 @@
           data-flag="{{ post.flag or '' }}"
           data-lat="{{ post.lat }}"
           data-lng="{{ post.lng }}"
-          data-kind="{{ post.kind or 'visited' }}"></span>
+          data-kind="{{ post.kind or 'visited' }}"
+          data-url="{{ post.url or '' }}"></span>
     {% endif %}
     {% endfor %}
   </div>
@@ -62,6 +63,13 @@
         <p class="hobby-detail-title"></p>
       </div>
       <p class="hobby-detail-summary"></p>
+      <a class="hobby-detail-link" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+          <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+        </svg>
+        外部リンク
+      </a>
     </div>
   </div>
 </section>
@@ -79,6 +87,7 @@
   var detailFlag = detail ? detail.querySelector(".hobby-detail-flag") : null;
   var detailTitle = detail ? detail.querySelector(".hobby-detail-title") : null;
   var detailSummary = detail ? detail.querySelector(".hobby-detail-summary") : null;
+  var detailLink = detail ? detail.querySelector(".hobby-detail-link") : null;
 
   var markers = Array.prototype.map.call(
     document.querySelectorAll("#travel-pins .travel-pin-data"),
@@ -90,7 +99,8 @@
         image: el.dataset.image || "",
         flag: el.dataset.flag || "",
         coords: [parseFloat(el.dataset.lng), parseFloat(el.dataset.lat)],
-        kind: el.dataset.kind === "wishlist" ? "wishlist" : "visited"
+        kind: el.dataset.kind === "wishlist" ? "wishlist" : "visited",
+        url: el.dataset.url || ""
       };
     }
   );
@@ -254,6 +264,14 @@
     }
     detailTitle.textContent = marker.country ? marker.title + " ・ " + marker.country : marker.title;
     detailSummary.textContent = marker.summary || "";
+    if (detailLink) {
+      if (marker.url) {
+        detailLink.href = marker.url;
+        detailLink.style.display = "inline-flex";
+      } else {
+        detailLink.style.display = "none";
+      }
+    }
   }
 
   function setTooltip(marker, point) {
