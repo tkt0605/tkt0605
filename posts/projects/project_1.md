@@ -1,9 +1,9 @@
 ---
 title: "ThreeBody"
 img: assets/projects/threebody_demo_0616.gif
-url: https://github.com/tkt0605/threebody
+url: https://threebody-phi.vercel.app/
 summary: "３つのLLM（AIの頭脳）を用いて互いに議論し合い結果を出す、AIチャットアプリ"
-browse: "Github"
+browse: "こちらから"
 pin: true
 order: 1
 ---
