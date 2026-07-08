@@ -4,4 +4,5 @@ summary: "「原爆の父」と呼ばれた物理学者J・ロバート・オッ
 image: /assets/movie/movie_3.png
 auther: "クリストファー・ノーラン"
 genre: "drama_film"
+url: ""
 ---

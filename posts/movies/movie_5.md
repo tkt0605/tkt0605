@@ -4,4 +4,5 @@ summary: "1930年代、死刑囚監房「グリーン・マイル」を舞台に
 image: /assets/movie/movie_5.png
 auther: "フランク ダラボン"
 genre: "drama_film"
+url: ""
 ---

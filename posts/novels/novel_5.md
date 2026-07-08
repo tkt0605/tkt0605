@@ -4,4 +4,5 @@ summary: "1950年代のアメリカを舞台に、行方不明の少年の死体
 image: /assets/novel/novel_5.png
 auther: "スティーブン・キング"
 genre: "abroad"
+url: ""
 ---
