@@ -4,12 +4,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #fbfaf7;
+  --color-bg: #d9dcdf;
   --color-ink: #1d1c1a;
   --color-ink-2: #6f6b64;
   --color-ink-3: #a8a39b;
-  --color-surface: #f1eee7;
-  --color-surface-2: #e9e4da;
+  --color-surface: #ffffff;
+  --color-surface-2: #f3f4f4;
   --radius-card: 28px;
   --font-sans: "Zen Kaku Gothic New", ui-sans-serif, system-ui, sans-serif;
 }
@@ -99,18 +99,6 @@ button.pill:focus-visible {
   background: var(--color-surface-2);
 }
 
-.pill--primary {
-  background: var(--color-ink);
-  color: var(--color-bg);
-}
-
-a.pill--primary:hover,
-a.pill--primary:focus-visible,
-button.pill--primary:hover,
-button.pill--primary:focus-visible {
-  background: var(--color-ink-2);
-}
-
 .eyebrow {
   margin: 0 0 20px;
   color: var(--color-ink-3);
@@ -190,17 +178,17 @@ footer {
 
 .hero-identity {
   display: flex;
-  flex: 1 1 380px;
+  flex: 1 1 auto;
   min-width: 0;
   align-items: center;
   gap: 16px;
 }
 
 .hero-avatar {
-  width: 80px;
-  height: 80px;
-  flex: 0 0 80px;
-  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  flex: 0 0 100px;
+  border-radius: 24px;
   object-fit: cover;
   object-position: center top;
 }
@@ -232,11 +220,6 @@ footer {
   line-height: 1.6;
 }
 
-.hero-contact {
-  flex: 0 0 auto;
-  margin-left: auto;
-}
-
 .prose-copy {
   color: var(--color-ink-2);
   font-size: 16px;
@@ -254,7 +237,7 @@ footer {
 .prose-copy code {
   padding: 2px 7px;
   border-radius: 8px;
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   color: var(--color-ink);
   font-family: inherit;
 }
@@ -409,10 +392,6 @@ footer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-}
-
-.links-mail {
-  grid-column: 1 / -1;
 }
 
 .site-footer {
