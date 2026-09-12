@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<article class="project-page fade-in">
+<article class="project-page">
   <header class="project-page-header">
-    <a href="/projects/" class="back-link">← Projects</a>
-    <p class="eyebrow">Project</p>
+    <a href="/projects/" class="back-link"><span aria-hidden="true">‹</span> Projects</a>
     <h1>{{ post.title }}</h1>
     {% if post.summary %}<p class="project-page-summary">{{ post.summary }}</p>{% endif %}
     {% if post.url %}
-    <a class="pill project-page-link" href="{{ post.url }}" target="_blank" rel="noopener noreferrer">
-      {{ post.browse or "外部リンク" }} ↗
+    <a class="button button--primary project-page-link" href="{{ post.url }}" target="_blank" rel="noopener noreferrer">
+      {{ post.browse or "外部リンク" }} <span aria-hidden="true">↗</span>
     </a>
     {% endif %}
   </header>
-  {% if post.content %}<div class="card prose-copy project-body">{{ post.content | safe }}</div>{% endif %}
+  {% if post.content %}<div class="card prose-copy project-body reveal">{{ post.content | safe }}</div>{% endif %}
 </article>
+<footer class="site-footer reveal">© {{ site.copyright_year }} {{ site.name }}</footer>
 {% endblock %}

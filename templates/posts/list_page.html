@@ -3,14 +3,13 @@
 {% if folder == "travels" %}<link rel="stylesheet" href="/globe.css" />{% endif %}
 {% endblock %}
 {% block content %}
-<header class="collection-header fade-in">
-  <a href="/" class="back-link">← Home</a>
-  <p class="eyebrow">Collection</p>
+<header class="collection-header">
+  <a href="/" class="back-link"><span aria-hidden="true">‹</span> Home</a>
   <h1>{{ folder_title }}</h1>
-  <p class="collection-count">{{ posts | length }} entries</p>
+  <p class="collection-count">{{ posts | length }} 件</p>
 </header>
-<section class="fade-in" aria-label="{{ folder_title }} list">
+<section class="reveal" aria-label="{{ folder_title }}の一覧">
   {{ list_html | safe }}
 </section>
-<footer class="site-footer fade-in">© {{ site.copyright_year }} {{ site.name }}</footer>
+<footer class="site-footer reveal">© {{ site.copyright_year }} {{ site.name }}</footer>
 {% endblock %}

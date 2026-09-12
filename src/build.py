@@ -125,14 +125,15 @@ for folder in post_folders:
         for post in posts:
             rendered = page_template.render(
                 post=post,
-                title=f"{name} | {post['title']}",
+                title=f"{site['site_name']} | {post['title']}",
                 name=name,
                 site=site,
+                folder=folder,
             )
             soup = bs(rendered)
             seo = og_tags({
                 "url": urljoin(url, f"/{folder}/{post['slug']}"),
-                "title": f"{name} | {post['title']}",
+                "title": f"{site['site_name']} | {post['title']}",
                 "description": post.get("summary", ""),
                 "type": "website",
             })
@@ -142,19 +143,20 @@ for folder in post_folders:
 
     posts_by_folder[folder] = posts
     lists[folder] = list_template.render(posts=posts, folder=folder, site=site)
+    folder_label = site.get("collections", {}).get(folder, folder.title())
     list_page_rendered = env.get_template("posts/list_page.html").render(
         posts=posts,
         folder=folder,
-        folder_title=site.get("collections", {}).get(folder, folder.title()),
+        folder_title=folder_label,
         list_html=lists[folder],
-        title=f"{name} | {folder}",
+        title=f"{site['site_name']} | {folder_label}",
         name=name,
         site=site,
     )
     list_page_soup=bs(list_page_rendered)
     seo=og_tags({
         "url": urljoin(url, f"/{folder}/"),
-        "title": f"{name} | {folder}",
+        "title": f"{site['site_name']} | {folder_label}",
         "type": "website",
     })
     for item in seo:
@@ -163,7 +165,7 @@ for folder in post_folders:
 # index.html
 seo_common = {
     "url": url,
-    "title": name,
+    "title": f"{site['site_name']} | Home",
     "description": site["description"],
     "type": "profile",
 }
@@ -177,13 +179,14 @@ index_soup = render_template(
     "index.html",
     lists=lists,
     name=name,
-    title=name,
+    title=f"{site['site_name']} | Home",
     site=site,
     whoami=whoami,
     hobby=hobby,
     experience=experience,
     featured=featured,
     others=others,
+    counts={key: len(value) for key, value in posts_by_folder.items()},
 )
 for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
