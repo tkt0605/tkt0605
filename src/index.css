@@ -66,7 +66,7 @@ a.pill:hover, a.pill:focus-visible { background: var(--color-surface-2); }
 .project-grid, .my-list-grid, .links-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .project-grid { gap: 16px; }
 .project-card { display: flex; min-height: 180px; flex-direction: column; justify-content: space-between; gap: 32px; }
-.project-card-top, .list-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.project-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .project-card-top strong { font-size: 18px; font-weight: 500; line-height: 1.5; }
 .project-card > span:not(.project-card-top) { color: var(--color-ink-2); font-size: 14px; line-height: 1.7; }
 
@@ -78,7 +78,14 @@ a.pill:hover, a.pill:focus-visible { background: var(--color-surface-2); }
 .timeline-item div p { margin-top: 5px; color: var(--color-ink-2); font-size: 14px; }
 
 .my-list-grid { gap: 16px; }
-.list-card { min-height: 104px; align-items: flex-end; font-size: 16px; font-weight: 500; }
+.list-card, .social-pill { display: flex; align-items: center; justify-content: center; text-align: center; }
+.list-card { min-height: 104px; gap: 10px; font-size: 16px; font-weight: 500; }
+.button-icon, .social-icon { width: 18px; height: 18px; flex: 0 0 18px; }
+.social-icon { background: currentColor; -webkit-mask-position: center; mask-position: center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: contain; mask-size: contain; }
+.social-icon--x { -webkit-mask-image: url('/assets/logo-white.png'); mask-image: url('/assets/logo-white.png'); }
+.social-icon--instagram { -webkit-mask-image: url('/assets/instagram.svg'); mask-image: url('/assets/instagram.svg'); }
+.social-icon--github { -webkit-mask-image: url('/assets/github.svg'); mask-image: url('/assets/github.svg'); }
+.social-icon--zenn { -webkit-mask-image: url('/assets/Zenn.svg'); mask-image: url('/assets/Zenn.svg'); }
 .links-grid { gap: 12px; }
 .site-footer { color: var(--color-ink-3); font-size: 13px; line-height: 1.5; }
 

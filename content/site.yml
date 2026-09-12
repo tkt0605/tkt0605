@@ -9,12 +9,16 @@ country_emoji: "🇯🇵"
 copyright_year: 2026
 socials:
   - label: X
+    icon: x
     url: https://x.com/TakatoKomada
   - label: Instagram
+    icon: instagram
     url: https://www.instagram.com/tk06_05
   - label: GitHub
+    icon: github
     url: https://github.com/tkt0605
   - label: Zenn
+    icon: zenn
     url: https://zenn.dev/tkt0605
 collections:
   projects: Projects
