@@ -1,0 +1,29 @@
+{% macro collection_card(post, modifier="", meta="", href="") -%}
+<article class="card collection-card {{ modifier }}">
+  {% set media = post.image or post.img or post.flag %}
+  {% if media %}
+  {% set media_src = media if media.startswith('/') or media.startswith('http') else '/' ~ media %}
+  <div class="collection-media">
+    <img src="{{ media_src }}" alt="{{ post.title }}" />
+  </div>
+  {% endif %}
+  <div class="collection-card-body">
+    <div class="collection-card-heading">
+      <h2>
+        {% if href %}<a href="{{ href }}">{{ post.title }}</a>{% else %}{{ post.title }}{% endif %}
+      </h2>
+      {% if post.url %}
+      <a
+        class="collection-action"
+        href="{{ post.url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="{{ post.title }}を外部サイトで開く"
+      >↗</a>
+      {% endif %}
+    </div>
+    {% if meta %}<p class="collection-meta">{{ meta }}</p>{% endif %}
+    {% if post.summary %}<p class="collection-summary">{{ post.summary }}</p>{% endif %}
+  </div>
+</article>
+{%- endmacro %}

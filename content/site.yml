@@ -1,0 +1,24 @@
+name: Takato Komada
+display_name: 駒田 隆人
+handle: "@tkt0605"
+domain: tkt0605.me
+description: Takato Komada's personal website
+profile_image: /assets/me/IMG_6892.jpg
+affiliation: 日本大学 理工学部
+country_emoji: "🇯🇵"
+copyright_year: 2026
+socials:
+  - label: X
+    url: https://x.com/TakatoKomada
+  - label: Instagram
+    url: https://www.instagram.com/tk06_05
+  - label: GitHub
+    url: https://github.com/tkt0605
+  - label: Zenn
+    url: https://zenn.dev/tkt0605
+collections:
+  projects: Projects
+  movies: Movies
+  musics: Musics
+  novels: Novels
+  travels: Travels

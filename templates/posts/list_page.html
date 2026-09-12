@@ -1,5 +1,16 @@
 {% extends "base.html" %}
+{% block head %}
+{% if folder == "travels" %}<link rel="stylesheet" href="/globe.css" />{% endif %}
+{% endblock %}
 {% block content %}
-<a href="/" class="text-sm text-zinc-400 hover:text-zinc-900 transition-colors">← ホームへ/{{ folder_title }}</a>
-{{ list_html | safe }}
+<header class="collection-header fade-in">
+  <a href="/" class="back-link">← Home</a>
+  <p class="eyebrow">Collection</p>
+  <h1>{{ folder_title }}</h1>
+  <p class="collection-count">{{ posts | length }} entries</p>
+</header>
+<section class="fade-in" aria-label="{{ folder_title }} list">
+  {{ list_html | safe }}
+</section>
+<footer class="site-footer fade-in">© {{ site.copyright_year }} {{ site.name }}</footer>
 {% endblock %}

@@ -5,14 +5,9 @@ from urllib.parse import urljoin
 
 import mistune
 import frontmatter
+import yaml
 from bs4 import BeautifulSoup, element
 from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNotFound
-
-first_name = "Takato"
-last_name = "Komada"
-name = f"{first_name} {last_name}"
-domain = "tkt0605.me"
-url = f"https://{domain}"
 
 parser = argparse.ArgumentParser(description="Build the website")
 parser.add_argument("--output", help="Output directory", default="dist")
@@ -21,6 +16,13 @@ args = parser.parse_args()
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 root_path = os.path.normpath(os.path.join(script_path, ".."))
+
+with open(os.path.join(root_path, "content", "site.yml"), encoding="utf-8") as f:
+    site = yaml.safe_load(f)
+
+name = site["name"]
+domain = site["domain"]
+url = f"https://{domain}"
 
 if not os.path.isabs(args.output):
     args.output = os.path.join(root_path, args.output)
@@ -121,7 +123,12 @@ for folder in post_folders:
 
     if page_template:
         for post in posts:
-            rendered = page_template.render(post=post, title=f"{name} | {post['title']}", name=name)
+            rendered = page_template.render(
+                post=post,
+                title=f"{name} | {post['title']}",
+                name=name,
+                site=site,
+            )
             soup = bs(rendered)
             seo = og_tags({
                 "url": urljoin(url, f"/{folder}/{post['slug']}"),
@@ -134,13 +141,15 @@ for folder in post_folders:
             write_output(soup.encode_contents().decode("utf-8"), folder, f"{post['slug']}.html")
 
     posts_by_folder[folder] = posts
-    lists[folder] = list_template.render(posts=posts)
+    lists[folder] = list_template.render(posts=posts, folder=folder, site=site)
     list_page_rendered = env.get_template("posts/list_page.html").render(
         posts=posts,
-        folder_title=folder,
+        folder=folder,
+        folder_title=site.get("collections", {}).get(folder, folder.title()),
         list_html=lists[folder],
         title=f"{name} | {folder}",
-        name=name
+        name=name,
+        site=site,
     )
     list_page_soup=bs(list_page_rendered)
     seo=og_tags({
@@ -155,18 +164,36 @@ for folder in post_folders:
 seo_common = {
     "url": url,
     "title": name,
-    "description": f"{name}'s personal website",
+    "description": site["description"],
     "type": "profile",
 }
 whoami = load_content(os.path.join(root_path, "content/information/whoami.md"))
 hobby = load_content(os.path.join(root_path, "content/mylist/hobby.md"))
 experience = load_content(os.path.join(root_path, "content/experience/experience.md"))
-index_soup = render_template("index.html", lists=lists, name=name, title=name, whoami=whoami, hobby=hobby, experience=experience, projects=posts_by_folder.get("projects", []))
+projects = posts_by_folder.get("projects", [])
+featured = next((project for project in projects if project["pin"]), None)
+others = [project for project in projects if project is not featured]
+index_soup = render_template(
+    "index.html",
+    lists=lists,
+    name=name,
+    title=name,
+    site=site,
+    whoami=whoami,
+    hobby=hobby,
+    experience=experience,
+    featured=featured,
+    others=others,
+)
 for item in og_tags(seo_common):
     index_soup.head.append(bs(item))
 write_output(index_soup.encode_contents().decode("utf-8"), "index.html")
 
 # public/の静的アセットを出力Directotryにコピー
+globe_css = os.path.join(script_path, "globe.css")
+if os.path.isfile(globe_css):
+    copy2(globe_css, os.path.join(args.output, "globe.css"))
+
 public_dir = os.path.join(script_path, "..", "public")
 if os.path.isdir(public_dir):
     for entry in os.listdir(public_dir):

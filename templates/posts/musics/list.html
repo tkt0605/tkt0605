@@ -1,56 +1,6 @@
-<div class="music-stage" id="music-stage">
-  <div class="flex flex-col w-full">
-    {% for post in posts %}
-    <div class="music-card" tabindex="0" role="button" aria-label="{{ post.title }}の詳細を表示"
-         data-title="{{ post.title }}" data-summary="{{ post.summary or '' }}" data-image="{{ post.image or '' }}">
-      <div class="music-card-cover">
-        {% if post.image %}
-        <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">
-        {% endif %}
-      </div>
-      <div class="music-card-info">
-        <div class="music-card-title">{{ post.title }}</div>
-        {% if post.author %}
-        <div class="music-card-author">{{ post.author }}</div>
-        {% endif %}
-        {% if post.url %}
-        <a class="music-card-link" href="{{ post.url }}" target="_blank" rel="noopener noreferrer">
-          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
-            <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
-          </svg>
-          外部リンク
-        </a>
-        {% endif %}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-</div>
-<div class="flex flex-col p-2 gap-2">
-  {% set situations = [
-    {"key": "morning", "label": "朝に聴く曲"},
-    {"key": "up", "label": "テンション上がる曲"},
-    {"key": "night", "label": "夜に聴く曲"}
-  ] %}
-  {% for situation in situations %}
-  {% set authors = [] %}
+{% from "posts/_card.html" import collection_card %}
+<ul class="collection-grid collection-grid--compact">
   {% for post in posts %}
-  {% if post.situation == situation.key and post.author and post.author not in authors %}
-  {% set _ = authors.append(post.author) %}
-  {% endif %}
+  <li>{{ collection_card(post, "collection-card--square", post.author or post.situation) }}</li>
   {% endfor %}
-  {% if authors %}
-  <section class="hobby-lineup-row">
-    <div class="hobby-lineup-label">
-      <span class="hobby-vibe-name">{{ situation.label }}</span>
-    </div>
-    <div class="hobby-lineup-detail">
-      {% for author in authors %}
-      <p>{{ author }},</p>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-  {% endfor %}
-</div>
+</ul>

@@ -1,359 +1,130 @@
-<div class="travel-stage">
-  <!-- 地球儀（d3-geo + topojsonで実際の大陸輪郭を描画。drag回転・wheel/pinchズーム） -->
-  <div class="globe-shell">
-    <div class="globe-stage" id="travel-globe-wrap">
-      <canvas id="travel-globe" class="globe-canvas" width="560" height="560" role="img" aria-label="訪れた国を示す地球儀"></canvas>
-      <div class="globe-tooltip" id="travel-tooltip"></div>
-      <div class="globe-hud">
-        <div>drag to rotate</div>
-        <div>wheel or pinch to zoom</div>
-      </div>
-      <div class="globe-legend">
-        <div class="globe-legend-row"><span class="legend-check">✓</span><span>been there</span></div>
-        <div class="globe-legend-row"><span class="legend-pin"></span><span>bucket list</span></div>
-      </div>
-    </div>
+{% from "posts/_card.html" import collection_card %}
+<div class="globe-shell">
+  <div class="globe-stage" id="travel-globe-wrap">
+    <canvas id="travel-globe" class="globe-canvas" width="560" height="560" role="img" aria-label="訪れた国を示す地球儀"></canvas>
+    <div class="globe-tooltip" id="travel-tooltip"></div>
+    <div class="globe-hud">drag to rotate<br />wheel or pinch to zoom</div>
+    <div class="globe-legend"><span><i class="legend-check">✓</i> visited</span><span><i class="legend-pin"></i> wish list</span></div>
   </div>
   <div id="travel-pins" hidden>
     {% for post in posts %}
     {% if post.lat is defined and post.lng is defined %}
-    <span class="travel-pin-data"
-          data-title="{{ post.title }}"
-          data-country="{{ post.country or '' }}"
-          data-summary="{{ post.summary or '' }}"
-          data-image="{{ post.image or '' }}"
-          data-flag="{{ post.flag or '' }}"
-          data-lat="{{ post.lat }}"
-          data-lng="{{ post.lng }}"
-          data-kind="{{ post.kind or 'visited' }}"
-          data-url="{{ post.url or '' }}"></span>
+    <span class="travel-pin-data" data-title="{{ post.title }}" data-slug="{{ post.slug }}" data-lat="{{ post.lat }}" data-lng="{{ post.lng }}" data-kind="{{ post.kind or 'visited' }}"></span>
     {% endif %}
     {% endfor %}
   </div>
 </div>
-<section>
-  <!-- 行った国名だけを横に流すリスト（国旗付き） -->
-  {% set countries = [] %}
-  {% set country_flags = {} %}
+
+<ul class="collection-grid collection-grid--wide">
   {% for post in posts %}
-  {% if post.country and post.country not in countries %}
-  {% set _ = countries.append(post.country) %}
-  {% set _ = country_flags.update({post.country: post.flag or ''}) %}
-  {% endif %}
+  <li id="travel-{{ post.slug }}">{{ collection_card(post, "collection-card--place", post.country) }}</li>
   {% endfor %}
-  {% if countries %}
-  <div class="country-list" aria-label="訪れた国" >
-    <div class="country-track">
-      {% for country in countries %}
-      <span class="country-pill">
-        {% if country_flags[country] %}
-        <img class="country-pill-flag" src="{{ country_flags[country] }}" alt="" loading="lazy">
-        {% endif %}
-        {{ country }}
-      </span>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-  <div class="hobby-detail" id="travel-detail">
-    <img class="hobby-detail-img" alt="">
-    <div>
-      <div class="hobby-detail-title-row">
-        <img class="hobby-detail-flag" alt="">
-        <p class="hobby-detail-title"></p>
-      </div>
-      <p class="hobby-detail-summary"></p>
-      <a class="hobby-detail-link" target="_blank" rel="noopener noreferrer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
-          <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
-        </svg>
-        外部リンク
-      </a>
-    </div>
-  </div>
-</section>
+</ul>
+
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
 (function () {
   var canvas = document.getElementById("travel-globe");
-  var wrap = document.getElementById("travel-globe-wrap");
   var tooltip = document.getElementById("travel-tooltip");
-  var detail = document.getElementById("travel-detail");
-  if (!canvas || !wrap || !window.d3 || !window.topojson) return;
+  if (!canvas || !window.d3 || !window.topojson) return;
 
-  var detailImg = detail ? detail.querySelector(".hobby-detail-img") : null;
-  var detailFlag = detail ? detail.querySelector(".hobby-detail-flag") : null;
-  var detailTitle = detail ? detail.querySelector(".hobby-detail-title") : null;
-  var detailSummary = detail ? detail.querySelector(".hobby-detail-summary") : null;
-  var detailLink = detail ? detail.querySelector(".hobby-detail-link") : null;
-
-  var markers = Array.prototype.map.call(
-    document.querySelectorAll("#travel-pins .travel-pin-data"),
-    function (el) {
-      return {
-        title: el.dataset.title || "",
-        country: el.dataset.country || "",
-        summary: el.dataset.summary || "",
-        image: el.dataset.image || "",
-        flag: el.dataset.flag || "",
-        coords: [parseFloat(el.dataset.lng), parseFloat(el.dataset.lat)],
-        kind: el.dataset.kind === "wishlist" ? "wishlist" : "visited",
-        url: el.dataset.url || ""
-      };
-    }
-  );
-
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var size = canvas.width; // CSS pixel size (320)
+  var markers = Array.prototype.map.call(document.querySelectorAll(".travel-pin-data"), function (el) {
+    return {
+      title: el.dataset.title || "",
+      slug: el.dataset.slug || "",
+      coords: [parseFloat(el.dataset.lng), parseFloat(el.dataset.lat)],
+      kind: el.dataset.kind === "wishlist" ? "wishlist" : "visited"
+    };
+  });
+  var size = canvas.width;
   var ctx = canvas.getContext("2d");
-
-  var projection = d3.geoOrthographic()
-    .translate([size / 2, size / 2])
-    .scale(size * 0.41)
-    .clipAngle(90)
-    .precision(0.3)
-    .rotate([-139, -35]);
-
+  var projection = d3.geoOrthographic().translate([size / 2, size / 2]).scale(size * 0.41).clipAngle(90).precision(0.3).rotate([-139, -35]);
   var path = d3.geoPath(projection, ctx);
-  var graticule = d3.geoGraticule10();
-  var sphere = { type: "Sphere" };
-  var minScale = size * 0.28;
-  var maxScale = size * 0.68;
-
   var countries = null;
-  var isDragging = false;
+  var dragging = false;
   var dragStart = null;
   var rotationStart = projection.rotate().slice();
-  var autoSpin = true;
-  var autoSpinTimer = null;
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function clampScale(next) {
-    return Math.max(minScale, Math.min(maxScale, next));
+  function canvasPoint(event) {
+    var rect = canvas.getBoundingClientRect();
+    return [(event.clientX - rect.left) * size / rect.width, (event.clientY - rect.top) * size / rect.height];
   }
-
-  function scheduleAutoSpin() {
-    if (autoSpinTimer) clearTimeout(autoSpinTimer);
-    autoSpinTimer = setTimeout(function () {
-      if (!isDragging) autoSpin = true;
-    }, 5000);
-  }
-
-  function markInteraction() {
-    autoSpin = false;
-    scheduleAutoSpin();
-  }
-
-  function getVisiblePoint(marker) {
+  function visiblePoint(marker) {
     var point = projection(marker.coords);
     if (!point) return null;
     var center = projection.invert(point);
-    if (!center) return null;
-    return d3.geoDistance(center, marker.coords) < Math.PI / 2 ? point : null;
+    return center && d3.geoDistance(center, marker.coords) < Math.PI / 2 ? point : null;
   }
-
-  function findMarkerAt(x, y) {
+  function markerAt(point) {
     for (var i = 0; i < markers.length; i++) {
-      var point = getVisiblePoint(markers[i]);
-      if (!point) continue;
-      var hitRadius = markers[i].kind === "visited" ? 10 : 12;
-      if (Math.hypot(point[0] - x, point[1] - y) <= hitRadius) {
-        return { marker: markers[i], point: point };
-      }
+      var projected = visiblePoint(markers[i]);
+      if (projected && Math.hypot(projected[0] - point[0], projected[1] - point[1]) <= 14) return { marker: markers[i], point: projected };
     }
     return null;
   }
-
-  function drawCheck(x, y, alpha) {
-    ctx.save();
-    ctx.translate(Math.round(x), Math.round(y));
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = "#16a34a";
-    ctx.fillRect(-7, -7, 14, 14);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(-4, 0, 2, 2);
-    ctx.fillRect(-2, 2, 2, 2);
-    ctx.fillRect(0, 0, 2, 2);
-    ctx.fillRect(2, -2, 2, 2);
-    ctx.fillRect(4, -4, 2, 2);
-    ctx.restore();
-  }
-
-  function drawPin(x, y, alpha) {
-    ctx.save();
-    ctx.translate(Math.round(x), Math.round(y));
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = "#dc2626";
-    ctx.beginPath();
-    ctx.arc(0, -4, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#7f1d1d";
-    ctx.fillRect(-1, 2, 2, 10);
-    ctx.restore();
-  }
-
   function drawMarker(marker) {
-    var point = projection(marker.coords);
+    var point = visiblePoint(marker);
     if (!point) return;
-    var center = projection.invert(point);
-    if (!center) return;
-    var visible = d3.geoDistance(center, marker.coords) < Math.PI / 2;
-    var alpha = visible ? 1 : 0.2;
-    if (marker.kind === "visited") {
-      drawCheck(point[0], point[1], alpha);
+    ctx.save();
+    ctx.translate(Math.round(point[0]), Math.round(point[1]));
+    if (marker.kind === "wishlist") {
+      ctx.fillStyle = "#d14b3f";
+      ctx.beginPath(); ctx.arc(0, -3, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(-1, 3, 2, 9);
     } else {
-      drawPin(point[0], point[1] - 2, alpha);
+      ctx.fillStyle = "#377b62"; ctx.fillRect(-7, -7, 14, 14);
+      ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(-4, 0); ctx.lineTo(-1, 3); ctx.lineTo(5, -4); ctx.stroke();
     }
+    ctx.restore();
   }
-
   function draw() {
     ctx.clearRect(0, 0, size, size);
-
-    ctx.save();
-    ctx.beginPath();
-    path(sphere);
-    ctx.clip();
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, size, size);
-
+    ctx.save(); ctx.beginPath(); path({ type: "Sphere" }); ctx.clip();
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, size, size);
     if (countries) {
-      ctx.beginPath();
-      path(countries);
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = "rgba(0, 0, 0, 0.18)";
-      ctx.stroke();
+      ctx.beginPath(); path(countries); ctx.fillStyle = "#eef0f1"; ctx.fill();
+      ctx.lineWidth = 1; ctx.strokeStyle = "#c9cdd0"; ctx.stroke();
     }
-
-    ctx.beginPath();
-    path(graticule);
-    ctx.lineWidth = 0.5;
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-    ctx.stroke();
-
-    markers.forEach(drawMarker);
-    ctx.restore();
-
-    ctx.beginPath();
-    path(sphere);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
-    ctx.stroke();
+    ctx.beginPath(); path(d3.geoGraticule10()); ctx.lineWidth = 0.5; ctx.strokeStyle = "#d9dcdf"; ctx.stroke();
+    markers.forEach(drawMarker); ctx.restore();
   }
-
-  function showInDetail(marker) {
-    if (!detailImg || !detailTitle || !detailSummary) return;
-    if (marker.image) {
-      detailImg.src = marker.image;
-      detailImg.alt = marker.title;
-      detailImg.style.display = "block";
-    } else {
-      detailImg.style.display = "none";
-    }
-    if (detailFlag) {
-      if (marker.flag) {
-        detailFlag.src = marker.flag;
-        detailFlag.alt = marker.country;
-        detailFlag.style.display = "inline-block";
-      } else {
-        detailFlag.style.display = "none";
-      }
-    }
-    detailTitle.textContent = marker.country ? marker.title + " ・ " + marker.country : marker.title;
-    detailSummary.textContent = marker.summary || "";
-    if (detailLink) {
-      if (marker.url) {
-        detailLink.href = marker.url;
-        detailLink.style.display = "inline-flex";
-      } else {
-        detailLink.style.display = "none";
-      }
-    }
-  }
-
-  function setTooltip(marker, point) {
-    if (!tooltip) return;
-    if (!marker || !point) {
-      tooltip.classList.remove("is-visible");
-      return;
-    }
-    tooltip.textContent = marker.title;
-    tooltip.style.left = point[0] + "px";
-    tooltip.style.top = point[1] + "px";
+  function showTooltip(hit) {
+    if (!tooltip || !hit) { if (tooltip) tooltip.classList.remove("is-visible"); return; }
+    var rect = canvas.getBoundingClientRect();
+    tooltip.textContent = hit.marker.title;
+    tooltip.style.left = hit.point[0] * rect.width / size + "px";
+    tooltip.style.top = hit.point[1] * rect.height / size + "px";
     tooltip.classList.add("is-visible");
   }
-
-  function animate() {
-    if (autoSpin && !isDragging && !reduceMotion) {
-      var r = projection.rotate();
-      projection.rotate([r[0] - 0.07, r[1], r[2]]);
+  canvas.addEventListener("pointerdown", function (event) {
+    dragging = true; dragStart = [event.clientX, event.clientY]; rotationStart = projection.rotate().slice(); canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener("pointermove", function (event) {
+    if (dragging) {
+      projection.rotate([rotationStart[0] + (event.clientX - dragStart[0]) * 0.35, Math.max(-65, Math.min(65, rotationStart[1] - (event.clientY - dragStart[1]) * 0.35)), rotationStart[2]]);
+      draw(); return;
     }
-    draw();
-    requestAnimationFrame(animate);
-  }
-
-  canvas.addEventListener("pointerdown", function (e) {
-    isDragging = true;
-    markInteraction();
-    dragStart = [e.clientX, e.clientY];
-    rotationStart = projection.rotate().slice();
-    canvas.setPointerCapture(e.pointerId);
+    showTooltip(markerAt(canvasPoint(event)));
   });
-
-  canvas.addEventListener("pointermove", function (e) {
-    if (isDragging && dragStart) {
-      markInteraction();
-      var dx = e.clientX - dragStart[0];
-      var dy = e.clientY - dragStart[1];
-      projection.rotate([
-        rotationStart[0] + dx * 0.35,
-        Math.max(-65, Math.min(65, rotationStart[1] - dy * 0.35)),
-        rotationStart[2]
-      ]);
-      draw();
-      return;
-    }
-    var hit = findMarkerAt(e.offsetX, e.offsetY);
-    setTooltip(hit && hit.marker, hit && hit.point);
+  canvas.addEventListener("pointerup", function () { dragging = false; });
+  canvas.addEventListener("pointercancel", function () { dragging = false; });
+  canvas.addEventListener("pointerleave", function () { dragging = false; showTooltip(null); });
+  canvas.addEventListener("wheel", function (event) {
+    event.preventDefault();
+    projection.scale(Math.max(size * 0.28, Math.min(size * 0.68, projection.scale() * (event.deltaY > 0 ? 0.94 : 1.06)))); draw();
+  }, { passive: false });
+  canvas.addEventListener("click", function (event) {
+    var hit = markerAt(canvasPoint(event));
+    var target = hit && document.getElementById("travel-" + hit.marker.slug);
+    if (target) target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
   });
-
-  function stopDragging() {
-    isDragging = false;
-    dragStart = null;
-    scheduleAutoSpin();
-  }
-  canvas.addEventListener("pointerup", stopDragging);
-  canvas.addEventListener("pointercancel", stopDragging);
-  canvas.addEventListener("pointerleave", function () {
-    setTooltip(null, null);
-    stopDragging();
-  });
-
-  canvas.addEventListener("wheel", function (e) {
-    e.preventDefault();
-    markInteraction();
-    projection.scale(clampScale(projection.scale() * (e.deltaY > 0 ? 0.94 : 1.06)));
-    draw();
-  });
-
-  canvas.addEventListener("click", function (e) {
-    var hit = findMarkerAt(e.offsetX, e.offsetY);
-    if (hit) showInDetail(hit.marker);
-  });
-
-  if (markers.length) showInDetail(markers[0]);
   draw();
-  requestAnimationFrame(animate);
-
   fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
-    .then(function (res) { return res.json(); })
-    .then(function (world) {
-      countries = topojson.feature(world, world.objects.countries);
-      draw();
-    })
+    .then(function (response) { return response.json(); })
+    .then(function (world) { countries = topojson.feature(world, world.objects.countries); draw(); })
     .catch(function () {});
 })();
 </script>
