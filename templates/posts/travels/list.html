@@ -15,7 +15,7 @@
   </div>
 </div>
 
-<ul class="collection-grid collection-grid--wide">
+<ul class="collection-grid collection-grid--place">
   {% for post in posts %}
   <li id="travel-{{ post.slug }}">{{ collection_card(post, "collection-card--place", post.country) }}</li>
   {% endfor %}

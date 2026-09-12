@@ -1,6 +1,6 @@
 {% from "posts/_card.html" import collection_card %}
-<ul class="collection-grid collection-grid--compact">
+<ul class="collection-grid collection-grid--poster">
   {% for post in posts %}
-  <li>{{ collection_card(post, "collection-card--square", post.auther or post.genre) }}</li>
+  <li>{{ collection_card(post, "collection-card--poster", post.auther) }}</li>
   {% endfor %}
 </ul>

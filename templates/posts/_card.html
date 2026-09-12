@@ -1,29 +1,31 @@
 {% macro collection_card(post, modifier="", meta="", href="") -%}
-<article class="card collection-card {{ modifier }}">
+{% set link = href or post.url %}
+{% set external = not href and post.url %}
+<article class="collection-card {{ modifier }}">
   {% set media = post.image or post.img or post.flag %}
   {% if media %}
   {% set media_src = media if media.startswith('/') or media.startswith('http') else '/' ~ media %}
   <div class="collection-media">
-    <img src="{{ media_src }}" alt="{{ post.title }}" />
+    <img src="{{ media_src }}" alt="{{ post.title }}" loading="lazy" />
+  </div>
+  {% else %}
+  <div class="collection-media collection-media--empty" aria-hidden="true">
+    <span>{{ post.title[:1] }}</span>
   </div>
   {% endif %}
   <div class="collection-card-body">
-    <div class="collection-card-heading">
-      <h2>
-        {% if href %}<a href="{{ href }}">{{ post.title }}</a>{% else %}{{ post.title }}{% endif %}
-      </h2>
-      {% if post.url %}
+    <h2 class="collection-card-title">
+      {% if link %}
       <a
-        class="collection-action"
-        href="{{ post.url }}"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="{{ post.title }}を外部サイトで開く"
-      >↗</a>
+        href="{{ link }}"
+        {% if external %}target="_blank" rel="noopener noreferrer"{% endif %}
+        {% if post.summary %}title="{{ post.summary }}"{% endif %}
+      >{{ post.title }}{% if external %}<span class="collection-card-ext" aria-hidden="true">↗</span>{% endif %}</a>
+      {% else %}
+      {{ post.title }}
       {% endif %}
-    </div>
+    </h2>
     {% if meta %}<p class="collection-meta">{{ meta }}</p>{% endif %}
-    {% if post.summary %}<p class="collection-summary">{{ post.summary }}</p>{% endif %}
   </div>
 </article>
 {%- endmacro %}
