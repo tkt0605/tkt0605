@@ -8,8 +8,16 @@
       <p class="hero-handle">{{ site.handle }}</p>
       <p class="hero-tagline">{{ site.tagline }}</p>
     </div>
-    <div class="hero-actions">  
+    {% if featured_projects or experiments %}
+    <div class="hero-actions">
+      <a class="hero-link" href="#projects">
+        <span>プロジェクトを見る</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m4 6 4 4 4-4" />
+        </svg>
+      </a>
     </div>
+    {% endif %}
   </div>
   <figure class="hero-portrait">
     <img
@@ -56,6 +64,16 @@
           </div>
         </div>
         {% if project.summary %}<p class="project-detail-summary">{{ project.summary }}</p>{% endif %}
+        <span class="project-detail-action">
+          <span>{% if project.url %}サイトを見る{% else %}詳しく見る{% endif %}</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            {% if project.url %}
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M6 4h6v6M12 4 4 12" />
+            {% else %}
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m6 4 4 4-4 4" />
+            {% endif %}
+          </svg>
+        </span>
       </a>
       {% endfor %}
     </div>
@@ -75,6 +93,12 @@
           </div>
         </div>
         {% if project.summary %}<p class="project-detail-summary">{{ project.summary }}</p>{% endif %}
+        <span class="project-detail-action">
+          <span>詳しく見る</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m6 4 4 4-4 4" />
+          </svg>
+        </span>
       </a>
       {% endfor %}
     </div>
@@ -91,7 +115,7 @@
   {% if experience.content %}
   <div class="background-intro prose-copy">{{ experience.content | safe }}</div>
   {% endif %}
-  <!-- {% if experience.timeline %}
+  {% if experience.timeline %}
   <ol class="timeline">
     {% for item in experience.timeline %}
     <li class="timeline-item">
@@ -103,7 +127,7 @@
     </li>
     {% endfor %}
   </ol>
-  {% endif %} -->
+  {% endif %}
 </section>
 {% endif %}
 

@@ -24,7 +24,10 @@
             title="{{ label }}"
             aria-label="{{ label }}"
             {% if folder is defined and folder == key %}aria-current="page"{% endif %}
-          >{{ nav_icon(key) }}</a>
+          >
+            {{ nav_icon(key) }}
+            <span class="nav-label" aria-hidden="true">{{ label }}</span>
+          </a>
           {% endfor %}
         </div>
       </div>
