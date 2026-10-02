@@ -2,31 +2,32 @@
 
 {% block content %}
 <section class="hero" aria-labelledby="profile-name">
-  <img
-    class="hero-avatar"
-    src="{{ site.profile_image }}"
-    alt="{{ site.display_name }}のプロフィール写真"
-    width="96"
-    height="96"
-    loading="eager"
-    fetchpriority="high"
-  />
-  <div class="hero-copy">
-    <h1 id="profile-name">
-      {{ site.display_name }}
-      <span class="hero-handle">{{ site.handle }}</span>
-    </h1>
-    <p>{{ site.affiliation }} <span aria-label="日本">{{ site.country_emoji }}</span></p>
+  <div class="hero-profile">
+    <div class="hero-copy">
+      <h1 id="profile-name">{{ site.display_name }}</h1>
+      <p class="hero-handle">{{ site.handle }}</p>
+      <p class="hero-tagline">{{ site.tagline }}</p>
+    </div>
+    <div class="hero-actions">
+      <a class="button button--primary" href="#projects">プロジェクト</a>
+      {% for social in site.socials %}{% if social.icon == "github" %}
+      <a class="button button--secondary" href="{{ social.url }}" target="_blank" rel="noopener noreferrer">
+        <span class="social-icon social-icon--github" aria-hidden="true"></span>
+        <span>GitHub</span>
+      </a>
+      {% endif %}{% endfor %}
+    </div>
   </div>
-  <div class="hero-actions">
-    <a class="button button--primary" href="#projects">プロジェクトを見る</a>
-    {% for social in site.socials %}{% if social.icon == "github" %}
-    <a class="button button--secondary" href="{{ social.url }}" target="_blank" rel="noopener noreferrer">
-      <span class="social-icon social-icon--github" aria-hidden="true"></span>
-      <span>GitHub</span>
-    </a>
-    {% endif %}{% endfor %}
-  </div>
+  <figure class="hero-portrait">
+    <img
+      src="{{ site.profile_image }}"
+      alt="{{ site.display_name }}のプロフィール写真"
+      width="480"
+      height="600"
+      loading="eager"
+      fetchpriority="high"
+    />
+  </figure>
 </section>
 
 {% if whoami %}
@@ -38,54 +39,52 @@
 </section>
 {% endif %}
 
-{% if featured or others %}
+{% if featured_projects or experiments %}
 <section class="reveal" id="projects" aria-labelledby="projects-title">
   <div class="section-head">
-    <h2 class="section-title" id="projects-title">プロジェクト</h2>
-    <p class="section-caption">つくったものと、いま動かしているもの。</p>
+    <h2 class="section-title" id="projects-title">Projects</h2>
+    <p class="section-caption">つくったものと、いま試しているもの。</p>
   </div>
 
-  {% if featured %}
-  <a
-    class="card featured-card"
-    href="{{ featured.url or featured.href }}"
-    {% if featured.url %}target="_blank" rel="noopener noreferrer"{% endif %}
-  >
-    {% if featured.img %}
-    {% set featured_image = featured.img if featured.img.startswith('/') or featured.img.startswith('http') else '/' ~ featured.img %}
-    <span class="featured-media">
-      <img src="{{ featured_image }}" alt="{{ featured.title }}" loading="eager" />
-    </span>
-    {% endif %}
-    <span class="featured-content">
-      <span>
-        <strong class="featured-name">{{ featured.title }}</strong>
-        {% if featured.summary %}
-        <span class="featured-summary">{{ featured.summary }}</span>
-        {% endif %}
-      </span>
-      <span class="arrow-button" aria-hidden="true">↗</span>
-    </span>
-  </a>
+  {% if featured_projects %}
+  <div class="project-group">
+    <h3 class="project-group-title">Featured</h3>
+    <div class="featured-project-grid">
+      {% for project in featured_projects %}
+      <a
+        class="card project-detail-card project-detail-card--featured"
+        href="{{ project.url or project.href }}"
+        {% if project.url %}target="_blank" rel="noopener noreferrer"{% endif %}
+      >
+        <div class="project-detail-heading">
+          <div>
+            <h4>{{ project.title }}</h4>
+            {% if project.subtitle %}<p class="project-detail-subtitle">{{ project.subtitle }}</p>{% endif %}
+          </div>
+        </div>
+        {% if project.summary %}<p class="project-detail-summary">{{ project.summary }}</p>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
   {% endif %}
 
-  {% if others %}
-  <div class="project-grid">
-    {% for project in others %}
-    <a
-      class="card project-card"
-      href="{{ project.url or project.href }}"
-      {% if project.url %}target="_blank" rel="noopener noreferrer"{% endif %}
-    >
-      <span class="project-card-top">
-        <strong>{{ project.title }}</strong>
-        <span aria-hidden="true">↗</span>
-      </span>
-      {% if project.summary %}
-      <span>{{ project.summary }}</span>
-      {% endif %}
-    </a>
-    {% endfor %}
+  {% if experiments %}
+  <div class="project-group">
+    <h3 class="project-group-title">Experiments</h3>
+    <div class="experiment-grid">
+      {% for project in experiments %}
+      <a class="card project-detail-card" href="{{ project.href }}">
+        <div class="project-detail-heading">
+          <div>
+            <h4>{{ project.title }}</h4>
+            {% if project.subtitle %}<p class="project-detail-subtitle">{{ project.subtitle }}</p>{% endif %}
+          </div>
+        </div>
+        {% if project.summary %}<p class="project-detail-summary">{{ project.summary }}</p>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
   </div>
   {% endif %}
 </section>
@@ -99,7 +98,7 @@
   {% if experience.content %}
   <div class="background-intro prose-copy">{{ experience.content | safe }}</div>
   {% endif %}
-  {% if experience.timeline %}
+  <!-- {% if experience.timeline %}
   <ol class="timeline">
     {% for item in experience.timeline %}
     <li class="timeline-item">
@@ -111,7 +110,7 @@
     </li>
     {% endfor %}
   </ol>
-  {% endif %}
+  {% endif %} -->
 </section>
 {% endif %}
 

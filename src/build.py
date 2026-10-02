@@ -173,8 +173,12 @@ whoami = load_content(os.path.join(root_path, "content/information/whoami.md"))
 hobby = load_content(os.path.join(root_path, "content/mylist/hobby.md"))
 experience = load_content(os.path.join(root_path, "content/experience/experience.md"))
 projects = posts_by_folder.get("projects", [])
-featured = next((project for project in projects if project["pin"]), None)
-others = [project for project in projects if project is not featured]
+featured_projects = [
+    project
+    for project in projects
+    if project.get("group") == "featured" or (not project.get("group") and project["pin"])
+]
+experiments = [project for project in projects if project not in featured_projects]
 index_soup = render_template(
     "index.html",
     lists=lists,
@@ -184,8 +188,8 @@ index_soup = render_template(
     whoami=whoami,
     hobby=hobby,
     experience=experience,
-    featured=featured,
-    others=others,
+    featured_projects=featured_projects,
+    experiments=experiments,
     counts={key: len(value) for key, value in posts_by_folder.items()},
 )
 for item in og_tags(seo_common):
